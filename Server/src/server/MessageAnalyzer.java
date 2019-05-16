@@ -24,18 +24,9 @@
 package server;
 
 /**
- *
+ * 该类用于解析TCP报文
  * @author Wang
  */
-public class Server {
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        while (true){
-             
-        }
-    }
+public class MessageAnalyzer {
     
 }
