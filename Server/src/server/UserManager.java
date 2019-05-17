@@ -39,15 +39,19 @@ public class UserManager {
         int index=Integer.parseInt(user.getID())-STARTNUM;
         USERS[index]=user;
     }
-    private static String getValidID(){
+    private static int getValidID(){
         int i;
         for (i=0;i<MAXUSERS;i++){
             if (USERS[i]==null) break;
         }
-        return Integer.toString(i+STARTNUM);
+        return i;
     }
     static User createUser(String name,String sex,String password){
-        return new User(getValidID(),name,sex,password);
+        int i=getValidID();
+        String ID=Integer.toString(i+STARTNUM);
+        USERS[i]=new User(ID,name,sex,password);
+        System.out.println("用户"+ID+"创建完成");
+        return USERS[i];
     }
     
 }
