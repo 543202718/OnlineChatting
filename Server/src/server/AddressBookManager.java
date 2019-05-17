@@ -46,7 +46,7 @@ public class AddressBookManager {
 
 class AddressBook{
     private Set<Friend> friendList;//好友列表
-    private Set<Group> groupList;//群聊列表
+    private Set<String> groupList;//群聊列表
     public AddressBook(){
         friendList=new TreeSet<>();
         groupList=new TreeSet<>();
@@ -66,10 +66,10 @@ class AddressBook{
     public void deleteFriend(Friend friend){
         friendList.remove(friend);
     }
-    public void addGroup(Group group){
+    public void addGroup(String group){
         groupList.add(group);
     }
-    public void deleteGroup(Group group){
+    public void deleteGroup(String group){
         groupList.remove(group);
     }
     public Friend[] findFriendByTag(String tag){

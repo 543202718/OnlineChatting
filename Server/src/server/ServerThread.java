@@ -24,10 +24,9 @@
 package server;
 
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,28 +34,27 @@ import java.util.logging.Logger;
  *
  * @author Wang
  */
-public class Server {
-    private static final int SERVERPORT=10000;
+public class ServerThread implements Runnable{
+    Socket clientSocket;
+    User user;
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+    public ServerThread(Socket clientSocket) {
+        this.clientSocket = clientSocket;
+    }
+    @Override
+    public void run() {
         try {
-            ServerSocket server = new ServerSocket(SERVERPORT);//将服务器绑定在周知端口号
-            ExecutorService threadPool = Executors.newCachedThreadPool();//使用线程池管理线程
-            System.out.println("正在等待客户连接中");
-            while (true){
-                Socket socket = server.accept();//接受客户端的连接请求
-                ServerThread thread = new ServerThread(socket);//新建线程处理
-                threadPool.execute(thread);
-                System.out.println("已经与客户建立连接");
-            }        
+            Scanner sc=new Scanner(clientSocket.getInputStream());
+            while (sc.hasNext()){
+                String line=sc.nextLine();//读取一个输入
+                MessageAnalyzer.analyse(line,this);//分析输入
+                
+            }
         } catch (IOException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchElementException ex) {
+            System.out.println("TCP连接已经断开");
         }       
     }
     
 }
-
-

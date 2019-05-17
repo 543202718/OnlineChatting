@@ -46,8 +46,8 @@ public class UserManager {
         }
         return Integer.toString(i+STARTNUM);
     }
-    static User createUser(String name,String sex){
-        return new User(getValidID(),name,sex);
+    static User createUser(String name,String sex,String password){
+        return new User(getValidID(),name,sex,password);
     }
     
 }
@@ -57,15 +57,19 @@ class User{
     private final String ID;//用户ID，唯一
     private String name;//昵称，不唯一
     private String sex;//性别，默认男性
-    public User(String ID){
+    private String password;//密码
+    //所有字符串都不允许包含标点符号
+    public User(String ID,String password){
         this.ID=ID;
         this.name="用户"+ID;
         this.sex="男";
+        this.password=password;
     }
-    public User(String ID, String name, String sex) {
+    public User(String ID, String name, String sex,String password) {
         this.ID = ID;
         this.name = name;
         this.sex = sex;
+        this.password=password;
     } 
     public String getID(){
         return ID;
@@ -82,4 +86,19 @@ class User{
     public void setSex(String sex){
         this.sex=sex;
     }
+    public boolean checkPassword(String s){
+        return password.equals(s);
+    }
+    @Override
+    public String toString(){
+        return "{"+ID+","+name+","+sex+"}";
+    }
+    /*
+    static User toUser(String s){  
+        String ss=s.substring(1,s.length()-1);
+        String[] sub=ss.split(",");
+        return new User(sub[0],sub[1],sub[2]);        
+    }
+    */
+    
 }
