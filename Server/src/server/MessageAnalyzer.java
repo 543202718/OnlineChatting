@@ -59,7 +59,7 @@ public class MessageAnalyzer {
         PrintWriter writer=null;
         try {
             Socket socket=th.clientSocket;
-            writer = new PrintWriter(socket.getOutputStream());
+            writer = new PrintWriter(socket.getOutputStream(),true);
             writer.println(message);        
         } catch (IOException ex) {
             Logger.getLogger(MessageAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
