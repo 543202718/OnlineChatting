@@ -37,6 +37,7 @@ import java.util.logging.Logger;
  */
 public class Server {
     private static final int SERVERPORT=10000;
+    
 
     /**
      * @param args the command line arguments

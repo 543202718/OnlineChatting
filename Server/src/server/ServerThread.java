@@ -47,8 +47,7 @@ public class ServerThread implements Runnable{
             Scanner sc=new Scanner(clientSocket.getInputStream());
             while (sc.hasNext()){
                 String line=sc.nextLine();//读取一个输入
-                MessageAnalyzer.analyse(line,this);//分析输入
-                
+                TCPAnalyzer.analyse(line,this);//分析输入               
             }
         } catch (IOException ex) {
             Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);

@@ -75,27 +75,44 @@ class Group implements Comparable<Group>{
     public String getMaster(){
         return master;
     }
+    public String[] getMemberList(){
+        return (String[])memberList.toArray();
+    }
+    public String[] getManagerList(){
+        return (String[])managerList.toArray();
+    }
+    /**
+     * 任命管理员
+     * @param user 管理员ID
+     */
     public void appointManager(String user){
-        //任命管理员
         if (memberList.contains(user)){
             managerList.add(user);
         }
     }
+    /**
+     * 解除管理员职务
+     * @param user 管理员ID
+     */
     public void dismissManager(String user){
-        //解除管理员职务
         if (memberList.contains(user)){
             managerList.remove(user);
         }
     }
+    /**
+     * 增加群成员
+     * @param user 群成员ID
+     */
     public void addMember(String user){
-        //增加群成员
         managerList.add(user);
-    }
+    }  
+    /**
+     * 删除群成员
+     * @param user 群成员ID
+     */
     public void deleteMember(String user){
-        //删除群成员
         managerList.remove((String)user);
     }
-
     @Override
     public int compareTo(Group t) {
         return this.getID().compareTo(t.getID());

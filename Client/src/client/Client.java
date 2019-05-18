@@ -21,51 +21,59 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package server;
+package client;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * 该类用于解析TCP报文
+ *
  * @author Wang
  */
-public class MessageAnalyzer {
-    public static void analyse(String message,ServerThread th){
-        if (message.startsWith("Register")){
-            //注册的报文应当满足格式： Register [name] [sex] [password]
-            String s[]=message.split(" ");
-            User user=UserManager.createUser(s[1],s[2],s[3]);
-            th.user=user;
-            System.out.println(user.getID()+"注册成功");
-            sendMessage(th,"User "+user);
-            //返回的报文满足格式： User [user]
-        }
-        
-    }
+public class Client {
+    private static final int SERVERPORT=10000;
+    static Socket socket;
     /**
-     * 报文种类：注册、登录、游客登录、获取用户信息、获取通讯录信息、获取群组信息、
-     * 发送私聊信息、发送群聊信息、添加好友、删除好友、加入群组、退出群组、
-     * 任命管理员、解除管理员、
+     * @param args the command line arguments
      */
-    
-    
-    
-    
-    private static void sendMessage(ServerThread th,String message){
-        PrintWriter writer=null;
+    public static void main(String[] args) {
         try {
-            Socket socket=th.clientSocket;
-            writer = new PrintWriter(socket.getOutputStream(),true);
-            writer.println(message);        
+            socket=new Socket("127.0.0.1",SERVERPORT);
+            ExecutorService threadPool = Executors.newCachedThreadPool();//使用线程池管理线程
+            Thread thread=new Thread(new ListenerThread());
+            threadPool.execute(thread);
+            TestFrame.getInstance().setVisible(true);           
+            
         } catch (IOException ex) {
-            Logger.getLogger(MessageAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            writer.close();       
-        }        
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+}
+
+class ListenerThread implements Runnable{
+
+    public ListenerThread() {
+    }
+    
+    @Override
+    public void run() {
+        try {
+            System.out.println("Start Listening.");
+            Scanner sc=new Scanner(Client.socket.getInputStream());
+            while (sc.hasNext()) {
+                String s=sc.nextLine();
+                System.out.println(s);
+                TestFrame.getInstance().printToScreen(s);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ListenerThread.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
 }

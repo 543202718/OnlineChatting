@@ -72,8 +72,12 @@ class AddressBook{
     public void deleteGroup(String group){
         groupList.remove(group);
     }
+    /**
+     * 查找某一组的所有好友
+     * @param tag 分组标记
+     * @return 所有好友
+     */
     public Friend[] findFriendByTag(String tag){
-        //查找某一组的所有好友
         ArrayList<Friend> list=new ArrayList<>();
         for (Friend f:getFriendList()){
             if ((tag==null && f.getTag()==null)||(tag!=null && tag.equals(f.getTag())) ) {
