@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 public class ServerThread implements Runnable{
     Socket clientSocket;
     User user;
+    private boolean exit=false;
 
     public ServerThread(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -45,15 +46,22 @@ public class ServerThread implements Runnable{
     public void run() {
         try {
             Scanner sc=new Scanner(clientSocket.getInputStream());
-            while (sc.hasNext()){
+            while (!exit && sc.hasNext()){
                 String line=sc.nextLine();//读取一个输入
                 TCPAnalyzer.analyse(line,this);//分析输入               
             }
+            System.out.println("线程已经退出");
         } catch (IOException ex) {
             Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NoSuchElementException ex) {
             System.out.println("TCP连接已经断开");
         }       
+    }
+    /**
+     * 线程退出
+     */
+    public void interrupt(){
+        exit=true;                
     }
     
 }

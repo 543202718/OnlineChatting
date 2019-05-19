@@ -51,7 +51,8 @@ public class TCPAnalyzer {
             boolean correct=user.checkPassword(s[2]);
             if (correct){
                 sendMessage(th,"User "+user);
-                MessageManager.insertSocket(s[1],th.clientSocket);
+                MessageManager.insertOnlineUser(s[1],th.clientSocket);//将该用户加入在线用户表
+                th.user=user;
                 System.out.println("用户"+user.getID()+"已经登录");
                 //在密码正确的情况下，返回的报文满足格式： User [user]
             }
@@ -61,12 +62,28 @@ public class TCPAnalyzer {
             }
         }
         else if (message.startsWith("Message")){
-            //聊天信息报文应当满足格式： Message [type] [sender] [receiver] [content]
+            //消息报文应当满足格式： Message [type] [sender] [receiver] [content]
             String s[]=message.split(" ");
-            MessageManager.forwardMessage(Integer.parseInt(s[1]),s[2],s[3],s[4]);
-            System.out.println("用户"+s[2]+"发送了聊天信息");
+            if ("2".equals(s[1])){//处理系统消息
+                MessageManager.analyseSystemMessage(s[2],s[3],s[4]);
+            }
+            else {//转发聊天消息
+                MessageManager.forwardMessage(Integer.parseInt(s[1]),s[2],s[3],s[4]);
+            }
+            System.out.println("用户"+s[2]+"发送了消息");
         }
-        
+        else if (message.startsWith("Exit")){
+            //退出报文应当满足格式： Exit
+            try {
+                th.clientSocket.close();//关闭接口
+                if (th.user!=null){//从在线用户表中删去该用户
+                    MessageManager.deleteSocket(th.user.getID());
+                }
+                th.interrupt();
+            } catch (IOException ex) {
+                Logger.getLogger(TCPAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
+            }           
+        }        
     }
     /**
      * 报文种类：注册、登录、游客登录、获取用户信息、获取通讯录信息、获取群组信息、

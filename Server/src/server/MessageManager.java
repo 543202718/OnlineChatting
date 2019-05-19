@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  */
 public class MessageManager {
     static Map<String,ArrayList<Message>> cachedMap=new HashMap<>();//维护聊天信息缓存
-    static Map<String,Socket> socketMap=new HashMap<>();//维护所有在线的用户
+    static Map<String,Socket> onlineMap=new HashMap<>();//维护所有在线的用户
     /**
      * 转发聊天信息。如果接收方没有在线，就将其缓存；如果在线，就直接发送。
      * @param type 聊天信息类型。0代表私聊，1代表群聊。
@@ -50,7 +50,7 @@ public class MessageManager {
     public static void forwardMessage(int type, String sender, String receiver,  String content){
         Message message=new Message(type,sender,receiver,content);
         for (String rev:message.getReceiverList()){
-            Socket socket=socketMap.get(rev);
+            Socket socket=onlineMap.get(rev);
             if (socket==null){
                 //接收方不在线
                 ArrayList<Message> cache=cachedMap.get(rev);
@@ -89,8 +89,8 @@ public class MessageManager {
      * @param user 用户
      * @param socket 端口
      */
-    public static void insertSocket(String user,Socket socket){
-        socketMap.put(user, socket);
+    public static void insertOnlineUser(String user,Socket socket){
+        onlineMap.put(user, socket);
     }
     
     /**
@@ -98,15 +98,26 @@ public class MessageManager {
      * @param user 用户
      */
     public static void deleteSocket(String user){
-        socketMap.remove(user);
+        onlineMap.remove(user);
     }
+    
+    /**
+     * 解析系统信息
+     * @param sender
+     * @param receiver
+     * @param content 
+     */
+    public static void analyseSystemMessage(String sender,String receiver,String content){
+        //尚未实现
+    }
+    
 }
 
 
 class Message{
     private final String sender;//发送方ID
     private final String receiver;//接收方ID
-    private final int type;//0代表私聊信息，1代表群聊信息
+    private final int type;//0代表私聊信息，1代表群聊信息，2表示系统消息
     private final String content;//内容
     private final Date date;//发送时间
             
@@ -142,12 +153,14 @@ class Message{
      * @return 接收者列表
      */
     public String[] getReceiverList(){
-        if (type==0){
-            String[] s={receiver};
-            return s;
-        }
-        else{
-            return GroupManager.getGroup(receiver).getMemberList();
+        switch (type) {
+            case 0:
+                String[] s={receiver};
+                return s;
+            case 1:
+                return GroupManager.getGroup(receiver).getMemberList();
+            default:
+                return null;
         }
     }
     
