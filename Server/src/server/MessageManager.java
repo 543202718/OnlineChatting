@@ -85,12 +85,20 @@ public class MessageManager {
     }
     
     /**
-     * 将用户、端口对加入哈希表
+     * 将用户、端口对加入哈希表，并发送所有缓存的消息
      * @param user 用户
      * @param socket 端口
      */
     public static void insertOnlineUser(String user,Socket socket){
         onlineMap.put(user, socket);
+        ArrayList<Message> list=cachedMap.get(user);
+        if (list!=null){
+            for (Message msg:list){
+                sendMessage(socket,msg);
+            }
+            cachedMap.remove(user);
+        }
+        System.out.println("用户"+user+"已经登录");
     }
     
     /**
@@ -138,7 +146,7 @@ public class MessageManager {
                 forwardMessage(type,sender,receiver,content);
                 AddressBookManager.getAddressBook(sender).deleteGroup(receiver);
                 GroupManager.getGroup(receiver).deleteMember(sender);
-                break;                     
+                break;      
         }
     }
     

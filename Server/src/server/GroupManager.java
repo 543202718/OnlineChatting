@@ -40,12 +40,20 @@ public class GroupManager {
         int index=Integer.parseInt(group.getID())-STARTNUM;
         GROUPS[index]=group;
     }
-    static String getValidID(){
+    private static int getValidID(){
         int i;
         for (i=0;i<MAXGROUP;i++){
             if (GROUPS[i]==null) break;
         }
-        return Integer.toString(i+STARTNUM);
+        return i;
+    }
+    static Group createGroup(String name,String master){
+        int i=getValidID();
+        String ID=Integer.toString(i+STARTNUM);//得到有效ID
+        Group group=new Group(ID,name,master);//新建群聊
+        GROUPS[i]=group;
+        AddressBookManager.getAddressBook(master).addGroup(ID);//在群主的通讯录中加入该群聊
+        return group;
     }
 }
 
@@ -119,4 +127,24 @@ class Group implements Comparable<Group>{
     public int compareTo(Group t) {
         return this.getID().compareTo(t.getID());
     }
+    
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("{").append(ID).append(",").append(name).append(",");
+        sb.append(master).append(",[");
+        for (String s:managerList){
+            sb.append(s).append(",");
+        }
+        sb.insert(sb.length()-1,']');
+        sb.append(",[");
+        for (String s:memberList){
+            sb.append(s).append(",");
+        }
+        sb.insert(sb.length()-1,']');
+        sb.append("}");        
+        return sb.toString();
+    }
+    
+    
 }

@@ -22,7 +22,9 @@
  * THE SOFTWARE.
  */
 package server;
-
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 /**
  * 该类用于管理所有的用户
  * @author Wang
@@ -61,19 +63,20 @@ class User{
     private final String ID;//用户ID，唯一
     private String name;//昵称，不唯一
     private String sex;//性别，默认男性
-    private String password;//密码
+    private final String password;//密码
+    private static String salt="&%5123***&&%%$$#@";//盐
     //所有字符串都不允许包含标点符号
     public User(String ID,String password){
         this.ID=ID;
         this.name="用户"+ID;
         this.sex="男";
-        this.password=password;
+        this.password=encrypt(password);
     }
     public User(String ID, String name, String sex,String password) {
         this.ID = ID;
         this.name = name;
         this.sex = sex;
-        this.password=password;
+        this.password=encrypt(password);
     } 
     public String getID(){
         return ID;
@@ -91,11 +94,32 @@ class User{
         this.sex=sex;
     }
     public boolean checkPassword(String s){
-        return password.equals(s);
+        return password.equals(encrypt(s));
     }
     @Override
     public String toString(){
         return "{"+ID+","+name+","+sex+"}";
+    }
+    
+    /**
+     * 对密码加盐后计算MD5
+     * @param dataStr 原始数据
+     * @return 加盐后的MD5
+     */
+    private static String encrypt(String dataStr) {
+        try {
+            dataStr = dataStr + salt;
+            MessageDigest m = MessageDigest.getInstance("MD5");
+            m.update(dataStr.getBytes("UTF8"));
+            byte s[] = m.digest();
+            String result = "";
+            for (int i = 0; i < s.length; i++) {
+		result += Integer.toHexString((0x000000FF & s[i]) | 0xFFFFFF00).substring(6);
+            }
+            return result;
+        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+        }
+        return null;
     }
     /*
     static User toUser(String s){  

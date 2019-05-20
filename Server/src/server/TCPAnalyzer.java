@@ -53,7 +53,6 @@ public class TCPAnalyzer {
                 sendMessage(th,"User "+user);
                 MessageManager.insertOnlineUser(s[1],th.clientSocket);//将该用户加入在线用户表
                 th.user=user;
-                System.out.println("用户"+user.getID()+"已经登录");
                 //在密码正确的情况下，返回的报文满足格式： User [user]
             }
             else{
@@ -65,8 +64,36 @@ public class TCPAnalyzer {
             //消息报文应当满足格式： Message [type] [sender] [receiver] [content]
             String s[]=message.split(" ");
             int type=Integer.parseInt(s[1]);
-            MessageManager.analyseMessage(type,s[2],s[3],s[4]);
+            int index=message.indexOf(s[4]);
+            String content=message.substring(index);//整个报文除去前面4部分外都是content
+            MessageManager.analyseMessage(type,s[2],s[3],content);
             System.out.println("用户"+s[2]+"发送了消息");
+        }
+        else if (message.startsWith("Get")){
+            //获取数据的报文应当满足格式： Get [User|Group|AddressBook] [ID]
+            String s[]=message.split(" ");
+            switch(s[1]){
+                case "User":    User user=UserManager.getUser(s[2]);
+                                sendMessage(th,"User "+user);
+                                System.out.println("发送了用户"+s[2]+"的数据");
+                                break;
+                case "Group":   Group group=GroupManager.getGroup(s[2]);
+                                sendMessage(th,"Group "+group);
+                                System.out.println("发送了群组"+s[2]+"的数据");
+                                break;                  
+                case "AddressBook":
+                                AddressBook ab=AddressBookManager.getAddressBook(s[2]);
+                                sendMessage(th,"AddressBook "+ab);
+                                System.out.println("发送了通讯录"+s[2]+"的数据");
+                                break;
+            }
+        }
+        else if (message.startsWith("NewGroup")){
+            //建群报文应当满足格式： NewGroup [name]
+            String s[]=message.split(" ");
+            Group group=GroupManager.createGroup(s[1],th.user.getID());
+            sendMessage(th,"Group "+group);
+            System.out.println("群聊"+group.getID()+"创建成功");
         }
         else if (message.startsWith("Exit")){
             //退出报文应当满足格式： Exit
@@ -81,15 +108,7 @@ public class TCPAnalyzer {
             }           
         }        
     }
-    /**
-     * 报文种类：注册、登录、游客登录、获取用户信息、获取通讯录信息、获取群组信息、
-     * 发送私聊信息、发送群聊信息、添加好友、删除好友、加入群组、退出群组、
-     * 任命管理员、解除管理员、
-     */
-    
-    
-    
-    
+   
     private static void sendMessage(ServerThread th,String message){
         PrintWriter writer;
         try {

@@ -69,6 +69,24 @@ class AddressBook{
     public void deleteGroup(String group){
         groupList.remove(group);
     }
+    
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("{[");
+        for (String s:friendList){
+            sb.append(s).append(",");
+        }
+        sb.insert(sb.length()-1,']');
+        sb.append(",[");
+        for (String s:groupList){
+            sb.append(s).append(",");
+        }
+        sb.insert(sb.length()-1,']');
+        sb.append("}");        
+        return sb.toString();
+    }
+    
     /**
      * 查找某一组的所有好友
      * @param tag 分组标记

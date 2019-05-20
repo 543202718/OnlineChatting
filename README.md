@@ -87,18 +87,35 @@ Java会将TCP连接包装为输入输出流，使用TCP报文等价于使用流�
   + receiver是群ID
   + content无效
   + 服务器修改通讯录和群信息，并将其转发给所有群管理员
+
+### 建群
+客户端发送以下报文：
+> NewGroup [name]
+
+服务器建立群聊，将它加入群主的通讯录，返回下面的报文：
+> Group [group]  
+
+
+### 获取数据
+客户端发送以下报文：
+> Get {User|Group|AddressBook} [ID]
+
+服务器根据ID和类型返回下列报文：
+> User [user]  
+> Group [group]  
+> AddressBook [addressbook]
+
+三者的toString()方法均已重载。
+
 ### 退出
 客户端发送下面的报文：
 > Exit
 
-
-
-
 ## TODO
 ### 服务器
-+ 密码加密存储（加盐、哈希）
-+ Get报文（包括Group和AddressBook的toString方法）
-+ 部分系统消息
++ 部分系统消息（如任命、解除管理员等）
++ 群的解散
++ 群主转移
 ### 客户端
 所有
 
