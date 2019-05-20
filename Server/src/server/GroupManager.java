@@ -61,7 +61,9 @@ class Group implements Comparable<Group>{
         this.name=name;
         this.master=master;
         this.managerList=new HashSet<>();
+        this.managerList.add(ID);//群主是当然的管理员
         this.memberList=new HashSet<>();
+        this.memberList.add(ID);//群主是当然的群成员
     }
     public String getID(){
         return ID;

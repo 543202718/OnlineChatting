@@ -45,7 +45,7 @@ public class AddressBookManager {
 }
 
 class AddressBook{
-    private Set<Friend> friendList;//好友列表
+    private Set<String> friendList;//好友列表
     private Set<String> groupList;//群聊列表
     public AddressBook(){
         friendList=new TreeSet<>();
@@ -57,13 +57,10 @@ class AddressBook{
     public Group[] getGroupList(){
         return (Group[])groupList.toArray();
     }
-    public void addFriend(Friend user){
+    public void addFriend(String user){
         friendList.add(user);
     }
-    public void addFriend(String user){
-        friendList.add(new Friend(user));
-    }
-    public void deleteFriend(Friend friend){
+    public void deleteFriend(String friend){
         friendList.remove(friend);
     }
     public void addGroup(String group){
@@ -76,7 +73,7 @@ class AddressBook{
      * 查找某一组的所有好友
      * @param tag 分组标记
      * @return 所有好友
-     */
+     
     public Friend[] findFriendByTag(String tag){
         ArrayList<Friend> list=new ArrayList<>();
         for (Friend f:getFriendList()){
@@ -85,7 +82,7 @@ class AddressBook{
             }
         }
         return (Friend[])list.toArray();
-    }
+    }*/
 
 }
 

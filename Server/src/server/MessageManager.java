@@ -103,12 +103,43 @@ public class MessageManager {
     
     /**
      * 解析系统信息
+     * @param type
      * @param sender
      * @param receiver
      * @param content 
      */
-    public static void analyseSystemMessage(String sender,String receiver,String content){
-        //尚未实现
+    public static void analyseMessage(int type,String sender,String receiver,String content){
+        //String s[]=content.split(",");
+        switch (type){
+            case 0://私聊消息
+            case 1://群聊消息
+            case 2://邀请好友
+            case 4://拒绝好友邀请
+            case 6://邀请加群
+            case 8://拒绝入群邀请
+                forwardMessage(type,sender,receiver,content);//转发
+                break;
+            case 3://接受好友邀请
+                forwardMessage(type,sender,receiver,content);
+                AddressBookManager.getAddressBook(sender).addFriend(receiver);
+                AddressBookManager.getAddressBook(receiver).addFriend(sender);
+                break;
+            case 5://删除好友
+                forwardMessage(type,sender,receiver,content);
+                AddressBookManager.getAddressBook(sender).deleteFriend(receiver);
+                AddressBookManager.getAddressBook(receiver).deleteFriend(receiver);
+                break;
+            case 7://接受入群邀请
+                forwardMessage(type,sender,receiver,content);
+                AddressBookManager.getAddressBook(sender).addGroup(receiver);
+                GroupManager.getGroup(receiver).addMember(sender);
+                break;
+            case 9://退群
+                forwardMessage(type,sender,receiver,content);
+                AddressBookManager.getAddressBook(sender).deleteGroup(receiver);
+                GroupManager.getGroup(receiver).deleteMember(sender);
+                break;                     
+        }
     }
     
 }
@@ -117,7 +148,7 @@ public class MessageManager {
 class Message{
     private final String sender;//发送方ID
     private final String receiver;//接收方ID
-    private final int type;//0代表私聊信息，1代表群聊信息，2表示系统消息
+    private final int type;//0代表私聊信息，1代表群聊信息，大于等于2表示系统消息
     private final String content;//内容
     private final Date date;//发送时间
             
@@ -154,11 +185,20 @@ class Message{
      */
     public String[] getReceiverList(){
         switch (type) {
-            case 0:
+            case 0://私聊
+            case 2://邀请好友
+            case 3://接受好友邀请
+            case 4://拒绝好友邀请
+            case 5://删除好友
+            case 6://邀请加群
+            case 8://拒绝入群邀请
                 String[] s={receiver};
                 return s;
-            case 1:
+            case 1://群聊
+            case 7://接受入群邀请
                 return GroupManager.getGroup(receiver).getMemberList();
+            case 9://退群
+                return GroupManager.getGroup(receiver).getManagerList();
             default:
                 return null;
         }
@@ -166,7 +206,7 @@ class Message{
     
     @Override
     public String toString(){
-        String s=String.format("%d %s %s %s %tT",type,sender,receiver,content,date);
+        String s=String.format("%d %s %s %tT %s",type,sender,receiver,date,content);
         return s;
     }
     

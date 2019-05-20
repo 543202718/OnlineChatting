@@ -64,12 +64,8 @@ public class TCPAnalyzer {
         else if (message.startsWith("Message")){
             //消息报文应当满足格式： Message [type] [sender] [receiver] [content]
             String s[]=message.split(" ");
-            if ("2".equals(s[1])){//处理系统消息
-                MessageManager.analyseSystemMessage(s[2],s[3],s[4]);
-            }
-            else {//转发聊天消息
-                MessageManager.forwardMessage(Integer.parseInt(s[1]),s[2],s[3],s[4]);
-            }
+            int type=Integer.parseInt(s[1]);
+            MessageManager.analyseMessage(type,s[2],s[3],s[4]);
             System.out.println("用户"+s[2]+"发送了消息");
         }
         else if (message.startsWith("Exit")){

@@ -7,7 +7,7 @@ This is an online chatting system, which is the final project of Network System 
 + 群聊
 + 通讯录
 + 群管理
-## TCP报文格式
+## 服务器与客户端的交互
 Java会将TCP连接包装为输入输出流，使用TCP报文等价于使用流。每一份报文使用换行符分割，在读取时推荐使用Scanner类的readLine()方法，在输出时推荐使用PrintWriter类的println()方法。
 
 ### 注册
@@ -28,12 +28,65 @@ Java会将TCP连接包装为输入输出流，使用TCP报文等价于使用流�
 > LoginFailed
 
 ### 聊天信息
-客户端发送下面的报文：
+客户端发送下面的报文，type=0是私聊消息，type=1是群聊消息：
 > Message [type] [sender] [receiver] [content]
 
 服务器接收后，如果接收方不在线就将其缓存，否则进行转发：
-> Message [type] [sender] [receiver] [content] [date]
+> Message [type] [sender] [receiver] [date] [content]
 
+### 系统信息
+客户端发送下面的报文：
+> Message [type] [sender] [receiver] [content]
+
+其中type大于等于2。服务器进行下面的处理：
++ 邀请好友
+  + type=2
+  + sender是邀请方的ID
+  + receiver是被邀请方的ID
+  + content无效
+  + 服务器将其转发
++ 接受好友邀请
+  + type=3
+  + sender是被邀请方的ID
+  + receiver是邀请方的ID
+  + content无效
+  + 服务器修改双方的通讯录，并将其转发
++ 拒绝好友邀请
+  + type=4
+  + sender是被邀请方的ID
+  + receiver是邀请方的ID
+  + content无效
+  + 服务器将其转发 
++ 删除好友
+  + type=5
+  + sender是主动删除方的ID
+  + receiver是被删除好友的ID
+  + content无效
+  + 服务器修改双方的通讯录，并将其转发
++ 邀请加入群聊
+  + type=6
+  + sender是邀请方的ID
+  + receiver是被邀请方的ID
+  + content是群ID
+  + 服务器将其转发
++ 接受入群邀请
+  + type=7
+  + sender是被邀请方的ID
+  + receiver是群ID
+  + content无效
+  + 服务器修改被邀请方的通讯录和群信息，并将其转发给所有群成员
++ 拒绝入群邀请
+  + type=8
+  + sender是被邀请方的ID
+  + receiver是邀请方的ID
+  + content是群ID
+  + 服务器将其转发
++ 退群
+  + type=9
+  + sender是准备退群者的ID
+  + receiver是群ID
+  + content无效
+  + 服务器修改通讯录和群信息，并将其转发给所有群管理员
 ### 退出
 客户端发送下面的报文：
 > Exit
@@ -41,7 +94,13 @@ Java会将TCP连接包装为输入输出流，使用TCP报文等价于使用流�
 
 
 
-
+## TODO
+### 服务器
++ 密码加密存储（加盐、哈希）
++ Get报文（包括Group和AddressBook的toString方法）
++ 部分系统消息
+### 客户端
+所有
 
 ## 注意事项
 + 服务器的IP地址是127.0.0.1（本机），端口号是10000
