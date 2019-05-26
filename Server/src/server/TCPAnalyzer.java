@@ -41,23 +41,22 @@ public class TCPAnalyzer {
             User user=UserManager.createUser(s[1],s[2],s[3]);
             th.user=user;
             System.out.println(user.getID()+"注册成功");
-            sendMessage(th,"User "+user);
-            //返回的报文满足格式： User [user]
+            sendMessage(th,"NewUser "+user);
+            //返回的报文满足格式： NewUser [user]
         }
         else if (message.startsWith("Login")){
             //登录的报文应当满足格式： Login [ID] [password]
             String s[]=message.split(" ");
             User user=UserManager.getUser(s[1]);
-            boolean correct=user.checkPassword(s[2]);
-            if (correct){
-                sendMessage(th,"User "+user);
+            if (user==null || !user.checkPassword(s[2])){
+                sendMessage(th,"LoginFailed");
+                //在账户不存在或密码错误的情况下，返回的报文满足格式： LoginFailed
+            }
+            else {
+                sendMessage(th,"LoginSucceed");
                 MessageManager.insertOnlineUser(s[1],th.clientSocket);//将该用户加入在线用户表
                 th.user=user;
-                //在密码正确的情况下，返回的报文满足格式： User [user]
-            }
-            else{
-                sendMessage(th,"LoginFailed");
-                //在密码错误的情况下，返回的报文满足格式： LoginFailed
+                //在密码正确的情况下，返回的报文满足格式： LoginSucceed
             }
         }
         else if (message.startsWith("Message")){

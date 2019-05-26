@@ -24,64 +24,46 @@
 package client;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author Wang
  */
-public class Client {
-    private static final int SERVERPORT=10000;
-    static Socket socket;
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        try {
-            socket=new Socket("127.0.0.1",SERVERPORT);
-            ExecutorService threadPool = Executors.newCachedThreadPool();//使用线程池管理线程
-            Thread thread=new Thread(new ListenerThread());
-            threadPool.execute(thread);
-            LoginFrame.getInstance().setVisible(true);
-            //TestFrame.getInstance().setVisible(true);           
-            
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
+public class ListenerThread implements Runnable{
+
+    public ListenerThread() {
     }
     
-    public static void sendMessage(String message){
-        PrintWriter writer;
-        try {
-            writer = new PrintWriter(socket.getOutputStream());
-            writer.println(message);   
-            writer.flush();
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-    }
-}
-
-class TestListenerThread implements Runnable{
-
-    public TestListenerThread() {
-    }
     
+
     @Override
     public void run() {
         try {
             System.out.println("Start Listening.");
             Scanner sc=new Scanner(Client.socket.getInputStream());
             while (sc.hasNext()) {
-                String s=sc.nextLine();
-                System.out.println(s);
-                TestFrame.getInstance().printToScreen(s);
+                String line=sc.nextLine();
+                if (line.startsWith("LoginFailed")){
+                    JOptionPane.showMessageDialog(null,"登录失败", "您输入的账号或密码错误", JOptionPane.ERROR_MESSAGE);
+                }
+                else if (line.startsWith("LoginSucceed")){
+                    LoginFrame.getInstance().setVisible(false);
+                    MainFrame.getInstance().setVisible(true);
+                }
+                else if (line.startsWith("NewUser")){
+                    String[] s=line.split(" ");
+                    User user=User.toUser(s[1]);
+                    UserManager.addUser(user);
+                    UserManager.setClientID(user.getID());
+                    JOptionPane.showMessageDialog(null,"注册成功", "您的账号是"+user.getID(), JOptionPane.INFORMATION_MESSAGE);
+                    RegisterFrame.getInstance().setVisible(false);
+                    LoginFrame.getInstance().setVisible(false);
+                    MainFrame.getInstance().setVisible(true);
+                }
             }
         } catch (IOException ex) {
             Logger.getLogger(TestListenerThread.class.getName()).log(Level.SEVERE, null, ex);
