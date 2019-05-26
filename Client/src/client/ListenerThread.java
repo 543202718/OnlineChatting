@@ -48,21 +48,45 @@ public class ListenerThread implements Runnable{
             while (sc.hasNext()) {
                 String line=sc.nextLine();
                 if (line.startsWith("LoginFailed")){
-                    JOptionPane.showMessageDialog(null,"登录失败", "您输入的账号或密码错误", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null,"您输入的账号或密码错误", "登录失败", JOptionPane.ERROR_MESSAGE);
                 }
                 else if (line.startsWith("LoginSucceed")){
+                    String[] s=line.split(" ");
+                    User user=User.toUser(s[1]);
+                    UserManager.addUser(user);
+                    UserManager.setClientID(user.getID());
                     LoginFrame.getInstance().setVisible(false);
                     MainFrame.getInstance().setVisible(true);
+                    Client.downloadAddressBook();
                 }
                 else if (line.startsWith("NewUser")){
                     String[] s=line.split(" ");
                     User user=User.toUser(s[1]);
                     UserManager.addUser(user);
                     UserManager.setClientID(user.getID());
-                    JOptionPane.showMessageDialog(null,"注册成功", "您的账号是"+user.getID(), JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null,"您的账号是"+user.getID(),"注册成功",  JOptionPane.INFORMATION_MESSAGE);
                     RegisterFrame.getInstance().setVisible(false);
                     LoginFrame.getInstance().setVisible(false);
                     MainFrame.getInstance().setVisible(true);
+                    Client.downloadAddressBook();
+                    
+                }
+                else if (line.startsWith("AddressBook")){
+                    String[] s=line.split(" ");
+                    Client.addressBook=AddressBook.toAddressBook(s[1]);
+                    for (String friend:Client.addressBook.getFriendList()){
+                        Client.sendMessage("Get User "+friend);
+                    }
+                    for (String group:Client.addressBook.getGroupList()){
+                        Client.sendMessage("Get Group "+group);
+                    }
+                    MainFrame.getInstance().update();
+                }
+                else if (line.startsWith("User")){
+                    String[] s=line.split(" ");
+                    User user=User.toUser(s[1]);
+                    UserManager.addUser(user);
+                    MainFrame.getInstance().update();
                 }
             }
         } catch (IOException ex) {

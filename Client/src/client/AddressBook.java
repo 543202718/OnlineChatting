@@ -21,32 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package server;
-import java.util.ArrayList;
+package client;
+
 import java.util.Set;
 import java.util.TreeSet;
-/**
- *
- * @author Wang
- */
-public class AddressBookManager {
-    private static final int MAXUSERS=100;
-    private static final int STARTNUM=10000;
-    private static final AddressBook[] BOOKS=new AddressBook[MAXUSERS];
-    static AddressBook getAddressBook(String ID){
-        int index=Integer.parseInt(ID)-STARTNUM;
-        return BOOKS[index];
-    }
-    static void addAddressBook(String ID,AddressBook addressBook){
-        int index=Integer.parseInt(ID)-STARTNUM;
-        BOOKS[index]=addressBook;
-    }
-    
-}
 
-class AddressBook{
+public class AddressBook{
     private Set<String> friendList;//好友列表
     private Set<String> groupList;//群聊列表
+    
     public AddressBook(){
         friendList=new TreeSet<>();
         groupList=new TreeSet<>();
@@ -82,6 +65,22 @@ class AddressBook{
         }      
         return sb.toString();
     }
+    
+    public static AddressBook toAddressBook(String s){
+        System.out.println(s);
+        String[] sub=s.split(",");
+        AddressBook ans=new AddressBook();
+        int m=Integer.parseInt(sub[0]);
+        int n=Integer.parseInt(sub[1]);
+        for (int i=2;i<2+m;i++){
+            ans.friendList.add(sub[i]);
+        }
+        for (int i=2+m;i<2+m+n;i++){
+            ans.groupList.add(sub[i]);
+        }
+        return ans;
+    }
+    
     
     /**
      * 查找某一组的所有好友
@@ -133,4 +132,5 @@ class Friend implements Comparable<Friend>{
         return UserManager.getUser(this.user).getID().compareTo(UserManager.getUser(t.user).getID());
     }
 }
+
 

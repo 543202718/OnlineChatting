@@ -30,10 +30,11 @@ public class UserManager {
     private static final int MAXUSERS=100;
     private static final int STARTNUM=10000;
     private static final User[] USERS=new User[MAXUSERS];
-    private static String clientID;
+    private static String clientID=null;
     static User getUser(String ID){
         int index=Integer.parseInt(ID)-STARTNUM;
-        return USERS[index];
+        if (index<0 || index>MAXUSERS)  return null;
+        else return USERS[index];
     }
     static void addUser(User user){
         int index=Integer.parseInt(user.getID())-STARTNUM;
@@ -82,7 +83,7 @@ class User{
     }
     @Override
     public String toString(){
-        return "{"+ID+","+name+","+sex+"}";
+        return name;
     }  
     static User toUser(String s){  
         String ss=s.substring(1,s.length()-1);

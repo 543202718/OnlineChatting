@@ -35,7 +35,8 @@ public class UserManager {
     private static final User[] USERS=new User[MAXUSERS];
     static User getUser(String ID){
         int index=Integer.parseInt(ID)-STARTNUM;
-        return USERS[index];
+        if (index<0 || index>MAXUSERS)  return null;
+        else return USERS[index];
     }
     static void addUser(User user){
         int index=Integer.parseInt(user.getID())-STARTNUM;

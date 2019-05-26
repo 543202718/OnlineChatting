@@ -53,7 +53,7 @@ public class TCPAnalyzer {
                 //在账户不存在或密码错误的情况下，返回的报文满足格式： LoginFailed
             }
             else {
-                sendMessage(th,"LoginSucceed");
+                sendMessage(th,"LoginSucceed "+user);
                 MessageManager.insertOnlineUser(s[1],th.clientSocket);//将该用户加入在线用户表
                 th.user=user;
                 //在密码正确的情况下，返回的报文满足格式： LoginSucceed

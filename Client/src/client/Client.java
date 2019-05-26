@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 public class Client {
     private static final int SERVERPORT=10000;
     static Socket socket;
+    public static AddressBook addressBook;
     /**
      * @param args the command line arguments
      */
@@ -65,6 +66,11 @@ public class Client {
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         } 
+    }
+    
+    public static void downloadAddressBook(){
+        User user=UserManager.getClient();
+        sendMessage("Get AddressBook "+user.getID());//得到通讯录        
     }
 }
 

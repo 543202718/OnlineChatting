@@ -44,6 +44,7 @@ public class Server {
      */
     public static void main(String[] args) {
         try {
+            new TestData().addTestData();//增加测试数据
             ServerSocket server = new ServerSocket(SERVERPORT);//将服务器绑定在周知端口号
             ExecutorService threadPool = Executors.newCachedThreadPool();//使用线程池管理线程
             System.out.println("正在等待客户连接中");

@@ -177,7 +177,7 @@ public class RegisterFrame extends javax.swing.JFrame {
         String password1=new String(jPasswordField1.getPassword());
         String password2=new String(jPasswordField2.getPassword());
         if (!password1.equals(password2)){
-            JOptionPane.showMessageDialog(null,"注册失败", "您输入的密码不相同", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null,"您输入的密码不相同","注册失败",JOptionPane.ERROR_MESSAGE);
         }
         else{
             String name=jTextField1.getText();
