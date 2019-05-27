@@ -27,8 +27,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class AddressBook{
-    private Set<String> friendList;//好友列表
-    private Set<String> groupList;//群聊列表
+    private final Set<String> friendList;//好友列表
+    private final Set<String> groupList;//群聊列表
     
     public AddressBook(){
         friendList=new TreeSet<>();
@@ -67,7 +67,6 @@ public class AddressBook{
     }
     
     public static AddressBook toAddressBook(String s){
-        System.out.println(s);
         String[] sub=s.split(",");
         AddressBook ans=new AddressBook();
         int m=Integer.parseInt(sub[0]);
@@ -80,57 +79,11 @@ public class AddressBook{
         }
         return ans;
     }
-    
-    
     /**
-     * 查找某一组的所有好友
-     * @param tag 分组标记
-     * @return 所有好友
-     
-    public Friend[] findFriendByTag(String tag){
-        ArrayList<Friend> list=new ArrayList<>();
-        for (Friend f:getFriendList()){
-            if ((tag==null && f.getTag()==null)||(tag!=null && tag.equals(f.getTag())) ) {
-                list.add(f);
-            }
-        }
-        return (Friend[])list.toArray();
-    }*/
-
-}
-
-class Friend implements Comparable<Friend>{
-    private final String user;//用户
-    private String tag;//分组标记，内容是组名
-    private String remark;//备注名
-    public Friend(String user,String tag,String remark){
-        this.user=user;
-        this.tag=tag;
-        this.remark=remark;
-    }
-    public Friend(String user){
-        this(user,null,null);
-    }
-    public String getUser(){
-        return user;
-    }
-    public String getTag(){
-        return tag;
-    }
-    public void setTag(String tag){
-        this.tag=tag;
-    }
-    public String getRemark(){
-        return remark;
-    }
-    public void setRemark(String remark){
-        this.remark=remark;
-    }
-
-    @Override
-    public int compareTo(Friend t) {
-        return UserManager.getUser(this.user).getID().compareTo(UserManager.getUser(t.user).getID());
+     * 从服务器下载通讯录
+     */
+    public static void downloadAddressBook(){
+        User user=UserManager.getClient();
+        Client.sendMessage("Get AddressBook "+user.getID());//得到通讯录        
     }
 }
-
-

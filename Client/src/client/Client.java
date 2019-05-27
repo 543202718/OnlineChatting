@@ -49,6 +49,8 @@ public class Client {
             ExecutorService threadPool = Executors.newCachedThreadPool();//使用线程池管理线程
             Thread thread=new Thread(new ListenerThread());
             threadPool.execute(thread);
+            //thread=new Thread(new MessageCacheThread());
+            //threadPool.execute(thread);
             LoginFrame.getInstance().setVisible(true);
             //TestFrame.getInstance().setVisible(true);           
             
@@ -68,10 +70,7 @@ public class Client {
         } 
     }
     
-    public static void downloadAddressBook(){
-        User user=UserManager.getClient();
-        sendMessage("Get AddressBook "+user.getID());//得到通讯录        
-    }
+    
 }
 
 class TestListenerThread implements Runnable{

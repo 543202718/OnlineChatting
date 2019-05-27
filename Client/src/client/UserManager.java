@@ -22,6 +22,9 @@
  * THE SOFTWARE.
  */
 package client;
+
+import java.util.ArrayList;
+
 /**
  * 该类用于管理用户
  * @author Wang
@@ -50,11 +53,12 @@ public class UserManager {
 }
 
 
-class User{
+class User extends Chatter{
     private final String ID;//用户ID，唯一
     private String name;//昵称，不唯一
     private String sex;//性别，默认男性
     //所有字符串都不允许包含标点符号
+    public ArrayList<Message> messageList=new ArrayList<>();
     public User(String ID){
         this.ID=ID;
         this.name="用户"+ID;
@@ -89,6 +93,9 @@ class User{
         String ss=s.substring(1,s.length()-1);
         String[] sub=ss.split(",");
         return new User(sub[0],sub[1],sub[2]);        
+    }
+    public void addMessage(Message message){
+        messageList.add(message);
     }
     
     

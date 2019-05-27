@@ -21,7 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package server;
+package client;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 /**
@@ -40,30 +41,23 @@ public class GroupManager {
         int index=Integer.parseInt(group.getID())-STARTNUM;
         GROUPS[index]=group;
     }
-    private static int getValidID(){
-        int i;
-        for (i=0;i<MAXGROUP;i++){
-            if (GROUPS[i]==null) break;
-        }
-        return i;
-    }
-    static Group createGroup(String name,String master){
-        int i=getValidID();
-        String ID=Integer.toString(i+STARTNUM);//得到有效ID
-        Group group=new Group(ID,name,master);//新建群聊
-        GROUPS[i]=group;
-        AddressBookManager.getAddressBook(master).addGroup(ID);//在群主的通讯录中加入该群聊
-        return group;
-    }
+
+}
+
+abstract class Chatter{
+    
 }
 
 
-class Group implements Comparable<Group>{
+
+
+class Group extends Chatter implements Comparable<Group>{
     private final String ID;//群ID，唯一
     private String name;//群名称，不唯一
     private final String master;//群主的ID
     private final Set<String> managerList;//管理员列表
     private final Set<String> memberList;//群成员列表
+    public ArrayList<Message> messageList=new ArrayList<>();
     public Group(String ID,String name,String master){
         this.ID=ID;
         this.name=name;
@@ -72,7 +66,7 @@ class Group implements Comparable<Group>{
         this.managerList.add(ID);//群主是当然的管理员
         this.memberList=new HashSet<>();
         this.memberList.add(ID);//群主是当然的群成员
-    }   
+    }
     public String getID(){
         return ID;
     }
@@ -86,10 +80,10 @@ class Group implements Comparable<Group>{
         return master;
     }
     public String[] getMemberList(){
-        return memberList.toArray(new String[0]);
+        return (String[])memberList.toArray();
     }
     public String[] getManagerList(){
-        return managerList.toArray(new String[0]);
+        return (String[])managerList.toArray();
     }
     /**
      * 任命管理员
@@ -130,18 +124,7 @@ class Group implements Comparable<Group>{
     
     @Override
     public String toString(){
-        StringBuilder sb = new StringBuilder();
-        sb.append(ID).append(",").append(name).append(",");
-        sb.append(master).append(",");
-        sb.append(managerList.size()).append(",");
-        sb.append(memberList.size()).append(",");        
-        for (String s:managerList){
-            sb.append(s).append(",");
-        }
-        for (String s:memberList){
-            sb.append(s).append(",");
-        }     
-        return sb.toString();
+        return name;
     }
     
     public static Group toGroup(String s){
@@ -157,6 +140,7 @@ class Group implements Comparable<Group>{
         }
         return group;
     }
-    
-    
+    public void addMessage(Message message){
+        messageList.add(message);
+    }
 }

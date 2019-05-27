@@ -23,14 +23,12 @@
  */
 package client;
 
-import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.Image;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
-import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 
 /**
@@ -39,9 +37,10 @@ import javax.swing.ListSelectionModel;
  */
 public class MainFrame extends javax.swing.JFrame {
     private static MainFrame instance;
-    private final DefaultListModel<User> listModel=new DefaultListModel<>();
-    private final JList<User> addressBookList=new JList<>(listModel);
+    private final DefaultListModel<Chatter> model=new DefaultListModel<>();
     private ImageIcon BOY,GIRL;
+    private int channel=0;//0代表消息界面，1代表联系人界面，2代表群聊界面
+    public ChatPanel chatPanel=null;
     /**
      * Creates new form MainFrame
      */
@@ -52,17 +51,21 @@ public class MainFrame extends javax.swing.JFrame {
     
     private void setup(){
         int iconSize=100;
-        //this.getContentPane().setBackground(Color.);
-        addressBookList.setFont(new Font("楷体",Font.PLAIN,24));
-        addressBookList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane1.setViewportView(addressBookList);
+        jPanel1.setLayout(new BorderLayout());
+        jList.setFont(new Font("楷体",Font.PLAIN,24));
+        jList.setModel(model);
+        jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane1.setViewportView(jList);
         ImageIcon rawIcon=new ImageIcon("pic/boy.png");
         BOY=new ImageIcon(rawIcon.getImage().getScaledInstance(iconSize,iconSize,Image.SCALE_DEFAULT));
         rawIcon=new ImageIcon("pic/girl.png");
         GIRL=new ImageIcon(rawIcon.getImage().getScaledInstance(iconSize,iconSize,Image.SCALE_DEFAULT));    
     }
     
-
+    /**
+     * 单例模式获取实例
+     * @return 实例
+     */
     public static MainFrame getInstance(){
         if (instance==null){
             instance=new MainFrame();
@@ -70,62 +73,66 @@ public class MainFrame extends javax.swing.JFrame {
         return instance;
     }
     
-    public void update(){
-        if (UserManager.getClient().getSex().equals("男")){
+    /**
+     * 更新用户的头像和昵称
+     */
+    public void updateAvatar(){
+        User user=UserManager.getClient();
+        jLabel2.setText(user.getName());
+        if (user.getSex().equals("男")){
             jButton1.setIcon(BOY);
         }
         else {
             jButton1.setIcon(GIRL);
         }
-        listModel.removeAllElements();
+    }
+    /**
+     * 更新消息列表
+     */
+    public void updateMessage(){
+        if (channel!=0) return;
+        model.removeAllElements();
+        int n=MessageManager.messageList.size();
+        for (int i=n-1;i>=0;i--){
+            Chatter chatter=MessageManager.messageList.get(i);
+            if (chatter!=null){
+                model.addElement(chatter);
+            }      
+        }
+        
+    }
+    /**
+     * 更新联系人列表
+     */
+    public void updateAddressBook(){     
+        if (channel!=1) return;
+        model.removeAllElements();
         for (String s: Client.addressBook.getFriendList()){
             User user=UserManager.getUser(s);
             if (user!=null){
-                listModel.addElement(user);
-            }                   
-        }
-        for (String s: Client.addressBook.getGroupList()){
-            User user=null;
-            if (user!=null){
-                listModel.addElement(user);
+                model.addElement(user);
             }                   
         }
     }
-    /*
-    public void beginUpdate(){
-        Thread thread=new Thread(new Updater());
-        thread.start();
-        
+    /**
+     * 更新群聊列表
+     */
+    public void updateGroup(){
+        if (channel!=2) return;
+        model.removeAllElements();
+        for (String s: Client.addressBook.getGroupList()){
+            Group group=GroupManager.getGroup(s);
+            if (group!=null){
+                model.addElement(group);
+            }                   
+        }
+    }
+    public void updateChatPanel(){
+        if (chatPanel!=null){
+            chatPanel.updateMessage();
+        }
     }
     
-    class Updater implements Runnable{
-
-        @Override
-        public void run() {
-            while (true) {
-                for (String s: Client.addressBook.getFriendList()){
-                    User user=UserManager.getUser(s);
-                    if (user!=null){
-                        listModel.addElement(user.getName());
-                    }                   
-                }
-                for (String s: Client.addressBook.getGroupList()){
-                    User user=null;
-                    if (user!=null){
-                        listModel.addElement(user.getName());
-                    }                   
-                }
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-        
-    }
-    */
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -137,31 +144,44 @@ public class MainFrame extends javax.swing.JFrame {
 
         jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
+        jList = new javax.swing.JList<>();
         jButton2 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jEditorPane1 = new javax.swing.JEditorPane();
         jButton4 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        jPanel1 = new javax.swing.JPanel();
         jButton5 = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
 
-        jButton2.setText("消息");
+        jList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jListMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(jList);
+
+        jButton2.setText("消 息");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("微软雅黑", 1, 30)); // NOI18N
         jLabel1.setText("消息");
 
-        jButton3.setText("通讯录");
+        jButton3.setText("联系人");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
-        jScrollPane2.setViewportView(jEditorPane1);
-
-        jButton4.setText("退出");
+        jButton4.setText("退 出");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton4ActionPerformed(evt);
@@ -172,16 +192,23 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("昵称");
 
-        jTextArea1.setEditable(false);
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane3.setViewportView(jTextArea1);
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 463, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
 
-        jButton5.setFont(new java.awt.Font("微软雅黑", 0, 14)); // NOI18N
-        jButton5.setText("发送");
-
-        jLabel3.setFont(new java.awt.Font("微软雅黑 Light", 0, 24)); // NOI18N
-        jLabel3.setText("聊天对象");
+        jButton5.setText("群 聊");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -190,30 +217,26 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
                     .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(69, 69, 69)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addGap(47, 47, 47)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE)
-                            .addComponent(jScrollPane3))
-                        .addComponent(jButton5)))
-                .addContainerGap(39, Short.MAX_VALUE))
+                    .addComponent(jLabel1)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(28, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -222,32 +245,77 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(11, 11, 11)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel3))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(40, 40, 40)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton5))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 431, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(37, Short.MAX_VALUE))
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 431, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 6, Short.MAX_VALUE)))
+                .addGap(37, 37, 37))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+/**
+ * 退出
+ * @param evt 
+ */
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         Client.sendMessage("Exit");
         System.exit(0);
     }//GEN-LAST:event_jButton4ActionPerformed
+/**
+ * 进入消息栏目
+ * @param evt 
+ */
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        channel=0;
+        jLabel1.setText("消息");
+        jPanel1.removeAll();
+        updateMessage();
+    }//GEN-LAST:event_jButton2ActionPerformed
+/**
+ * 进入联系人栏目
+ * @param evt 
+ */
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        channel=1;
+        jLabel1.setText("联系人");
+        jPanel1.removeAll();
+        updateAddressBook();
+    }//GEN-LAST:event_jButton3ActionPerformed
+/**
+ * 进入群聊栏目（该栏目管理所有的群聊）。
+ * @param evt 
+ */
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        channel=2;
+        jLabel1.setText("群聊");
+        jPanel1.removeAll();
+        updateGroup();
+    }//GEN-LAST:event_jButton5ActionPerformed
+/**
+ * JList的鼠标点击事件。点击后应当在右侧显示合适的界面。
+ * @param evt 
+ */
+    private void jListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListMouseClicked
+        int i=jList.getSelectedIndex();
+        if (i<0) return;
+        switch(channel){
+            case 0: chatPanel=new ChatPanel(model.get(i));
+                    jPanel1.removeAll();
+                    jPanel1.add(chatPanel);
+                    jPanel1.updateUI();
+                    chatPanel.setVisible(true);
+                    break;
+            case 1: 
+            case 2: chatPanel=null;
+        }
+    }//GEN-LAST:event_jListMouseClicked
 
     /**
      * @param args the command line arguments
@@ -290,13 +358,10 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JList<Chatter> jList;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
 }

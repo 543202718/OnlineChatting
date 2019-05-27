@@ -26,8 +26,10 @@ package server;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 /**
  * 该类用于解析TCP报文
@@ -54,9 +56,20 @@ public class TCPAnalyzer {
             }
             else {
                 sendMessage(th,"LoginSucceed "+user);
-                MessageManager.insertOnlineUser(s[1],th.clientSocket);//将该用户加入在线用户表
                 th.user=user;
+                MessageManager.insertOnlineUser(s[1],th.clientSocket);//将该用户加入在线用户表               
                 //在密码正确的情况下，返回的报文满足格式： LoginSucceed
+            }
+        }
+        else if (message.startsWith("Fetch")){
+            String s[]=message.split(" ");
+            ArrayList<Message> list=MessageManager.cachedMap.get(s[1]);
+            Socket socket=MessageManager.onlineMap.get(s[1]);
+            if (list!=null){
+                for (Message msg:list){
+                    MessageManager.sendMessage(socket,msg);
+                }
+                MessageManager.cachedMap.remove(s[1]);
             }
         }
         else if (message.startsWith("Message")){

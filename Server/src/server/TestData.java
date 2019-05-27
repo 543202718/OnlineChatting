@@ -35,6 +35,9 @@ public class TestData {
         new User("10003","李","男","123456"),
         new User("10004","周","女","123456"),
     };
+    Group[] groups={
+        new Group("10000","计算机学院","10000"),
+    };
 
     public TestData() {
     }
@@ -46,9 +49,15 @@ public class TestData {
             UserManager.addUser(user);
             AddressBookManager.addAddressBook(user.getID(),new AddressBook());
         }
+        for (Group group:groups){
+            GroupManager.addGroup(group);
+        }
         AddressBookManager.getAddressBook("10000").addFriend("10001");
         AddressBookManager.getAddressBook("10000").addFriend("10004");
         AddressBookManager.getAddressBook("10000").addFriend("10003");
+        AddressBookManager.getAddressBook("10000").addGroup("10000");
         AddressBookManager.getAddressBook("10004").addFriend("10000");
+        MessageManager.forwardMessage(0,"10001","10000","Hello");
+        MessageManager.forwardMessage(1,"10000","10000","Hello");
     }
 }

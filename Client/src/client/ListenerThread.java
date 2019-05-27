@@ -24,6 +24,10 @@
 package client;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,8 +42,6 @@ public class ListenerThread implements Runnable{
     public ListenerThread() {
     }
     
-    
-
     @Override
     public void run() {
         try {
@@ -47,50 +49,77 @@ public class ListenerThread implements Runnable{
             Scanner sc=new Scanner(Client.socket.getInputStream());
             while (sc.hasNext()) {
                 String line=sc.nextLine();
-                if (line.startsWith("LoginFailed")){
-                    JOptionPane.showMessageDialog(null,"您输入的账号或密码错误", "登录失败", JOptionPane.ERROR_MESSAGE);
-                }
-                else if (line.startsWith("LoginSucceed")){
-                    String[] s=line.split(" ");
-                    User user=User.toUser(s[1]);
-                    UserManager.addUser(user);
-                    UserManager.setClientID(user.getID());
-                    LoginFrame.getInstance().setVisible(false);
-                    MainFrame.getInstance().setVisible(true);
-                    Client.downloadAddressBook();
-                }
-                else if (line.startsWith("NewUser")){
-                    String[] s=line.split(" ");
-                    User user=User.toUser(s[1]);
-                    UserManager.addUser(user);
-                    UserManager.setClientID(user.getID());
-                    JOptionPane.showMessageDialog(null,"您的账号是"+user.getID(),"注册成功",  JOptionPane.INFORMATION_MESSAGE);
-                    RegisterFrame.getInstance().setVisible(false);
-                    LoginFrame.getInstance().setVisible(false);
-                    MainFrame.getInstance().setVisible(true);
-                    Client.downloadAddressBook();
-                    
-                }
-                else if (line.startsWith("AddressBook")){
-                    String[] s=line.split(" ");
-                    Client.addressBook=AddressBook.toAddressBook(s[1]);
-                    for (String friend:Client.addressBook.getFriendList()){
-                        Client.sendMessage("Get User "+friend);
-                    }
-                    for (String group:Client.addressBook.getGroupList()){
-                        Client.sendMessage("Get Group "+group);
-                    }
-                    MainFrame.getInstance().update();
-                }
-                else if (line.startsWith("User")){
-                    String[] s=line.split(" ");
-                    User user=User.toUser(s[1]);
-                    UserManager.addUser(user);
-                    MainFrame.getInstance().update();
-                }
+                analyse(line);
             }
         } catch (IOException ex) {
             Logger.getLogger(TestListenerThread.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void analyse(String line){
+        if (line.startsWith("LoginFailed")){
+            JOptionPane.showMessageDialog(null,"您输入的账号或密码错误", "登录失败", JOptionPane.ERROR_MESSAGE);
+        }
+        else if (line.startsWith("LoginSucceed")) {
+            String[] s = line.split(" ");
+            User user = User.toUser(s[1]);
+            UserManager.addUser(user);
+            UserManager.setClientID(user.getID());
+            LoginFrame.getInstance().setVisible(false);
+            MainFrame.getInstance().setVisible(true);
+            AddressBook.downloadAddressBook();
+        } 
+        else if (line.startsWith("NewUser")) {
+            String[] s = line.split(" ");
+            User user = User.toUser(s[1]);
+            UserManager.addUser(user);
+            UserManager.setClientID(user.getID());
+            JOptionPane.showMessageDialog(null, "您的账号是" + user.getID(), "注册成功", JOptionPane.INFORMATION_MESSAGE);
+            RegisterFrame.getInstance().setVisible(false);
+            LoginFrame.getInstance().setVisible(false);
+            MainFrame.getInstance().setVisible(true);
+            AddressBook.downloadAddressBook();
+        } 
+        else if (line.startsWith("AddressBook")) {
+            String[] s = line.split(" ");
+            Client.addressBook = AddressBook.toAddressBook(s[1]);
+            for (String friend : Client.addressBook.getFriendList()) {
+                Client.sendMessage("Get User " + friend);
+            }
+            for (String group : Client.addressBook.getGroupList()) {
+                Client.sendMessage("Get Group " + group);
+            }
+            Client.sendMessage("Fetch " + UserManager.getClient().getID());
+            MainFrame.getInstance().updateAvatar();
+            MainFrame.getInstance().updateAddressBook();
+        } 
+        else if (line.startsWith("User")) {
+            String[] s = line.split(" ");
+            User user = User.toUser(s[1]);
+            UserManager.addUser(user);
+            MainFrame.getInstance().updateAddressBook();
+        } 
+        else if (line.startsWith("Group")) {
+            String[] s = line.split(" ");
+            Group group = Group.toGroup(s[1]);
+            GroupManager.addGroup(group);
+            MainFrame.getInstance().updateGroup();
+        }
+        else if (line.startsWith("Message")){          
+            try {
+                String[] s = line.split(" ");
+                int type = Integer.parseInt(s[1]);
+                Date date = new SimpleDateFormat("hh:mm:ss").parse(s[4]);
+                int index = line.indexOf(s[5]);
+                String content = line.substring(index);//整个报文除去前面4部分外都是content
+                Message message = new Message(type, s[2], s[3], date, content);
+                MessageManager.addMessage(message);
+                MainFrame.getInstance().updateMessage();
+                MainFrame.getInstance().updateChatPanel();
+            } catch (ParseException ex) {
+                Logger.getLogger(ListenerThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         }
     }
     

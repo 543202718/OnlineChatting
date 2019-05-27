@@ -73,7 +73,7 @@ public class MessageManager {
      * @param socket 端口
      * @param message 聊天信息
      */
-    private static void sendMessage(Socket socket,Message message){
+    static void sendMessage(Socket socket,Message message){
         PrintWriter writer;
         try {
             writer = new PrintWriter(socket.getOutputStream());
@@ -91,13 +91,6 @@ public class MessageManager {
      */
     public static void insertOnlineUser(String user,Socket socket){
         onlineMap.put(user, socket);
-        ArrayList<Message> list=cachedMap.get(user);
-        if (list!=null){
-            for (Message msg:list){
-                sendMessage(socket,msg);
-            }
-            cachedMap.remove(user);
-        }
         System.out.println("用户"+user+"已经登录");
     }
     
