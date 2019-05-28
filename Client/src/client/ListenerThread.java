@@ -49,6 +49,7 @@ public class ListenerThread implements Runnable{
             Scanner sc=new Scanner(Client.socket.getInputStream());
             while (sc.hasNext()) {
                 String line=sc.nextLine();
+                System.out.println(line);
                 analyse(line);
             }
         } catch (IOException ex) {
@@ -108,11 +109,16 @@ public class ListenerThread implements Runnable{
         else if (line.startsWith("Message")){          
             try {
                 String[] s = line.split(" ");
+                System.out.println(line);
                 int type = Integer.parseInt(s[1]);
                 Date date = new SimpleDateFormat("hh:mm:ss").parse(s[4]);
-                int index = line.indexOf(s[5]);
-                String content = line.substring(index);//整个报文除去前面4部分外都是content
-                Message message = new Message(type, s[2], s[3], date, content);
+                StringBuilder content = new StringBuilder(s[5]);
+                for (int i = 6; i < s.length; i++) {
+                    content.append(" ").append(s[i]);
+                }
+                System.out.println(content);
+                //整个报文除去前面5部分外都是content
+                Message message = new Message(type, s[2], s[3], date, content.toString());
                 MessageManager.addMessage(message);
                 MainFrame.getInstance().updateMessage();
                 MainFrame.getInstance().updateChatPanel();

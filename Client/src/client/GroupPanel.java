@@ -163,6 +163,7 @@ public class GroupPanel extends javax.swing.JPanel {
         try {
             int x=Integer.parseInt(ID);
             Client.sendMessage("Message 6 "+UserManager.getClient().getID()+" "+ID+" "+group.getID());
+            System.out.println("Message 6 "+UserManager.getClient().getID()+" "+ID+" "+group.getID());
             JOptionPane.showMessageDialog(null,"入群邀请已发送", "邀请成员", JOptionPane.INFORMATION_MESSAGE);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null,"您输入的账号不存在", "错误", JOptionPane.ERROR_MESSAGE);

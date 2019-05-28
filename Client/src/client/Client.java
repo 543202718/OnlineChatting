@@ -63,6 +63,7 @@ public class Client {
         PrintWriter writer;
         try {
             writer = new PrintWriter(socket.getOutputStream());
+            System.out.println(message);
             writer.println(message);   
             writer.flush();
         } catch (IOException ex) {

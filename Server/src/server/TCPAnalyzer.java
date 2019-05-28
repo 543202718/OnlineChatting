@@ -74,12 +74,15 @@ public class TCPAnalyzer {
         }
         else if (message.startsWith("Message")){
             //消息报文应当满足格式： Message [type] [sender] [receiver] [content]
-            String s[]=message.split(" ");
-            int type=Integer.parseInt(s[1]);
-            int index=message.indexOf(s[4]);
-            String content=message.substring(index);//整个报文除去前面4部分外都是content
-            MessageManager.analyseMessage(type,s[2],s[3],content);
-            System.out.println("用户"+s[2]+"发送了消息");
+            String s[] = message.split(" ");
+            int type = Integer.parseInt(s[1]);
+            StringBuilder content = new StringBuilder(s[4]);
+            for (int i = 5; i < s.length; i++) {
+                content.append(" ").append(s[i]);
+            }
+            //整个报文除去前面4部分外都是content
+            MessageManager.analyseMessage(type, s[2], s[3], content.toString());
+            System.out.println("用户" + s[2] + "发送了消息");
         }
         else if (message.startsWith("Get")){
             //获取数据的报文应当满足格式： Get [User|Group|AddressBook] [ID]

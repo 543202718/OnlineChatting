@@ -84,7 +84,37 @@ public class MessageManager {
                     cacheList.add(message);
                     Client.sendMessage("Get User " + message.getSender());
                 } else {
-                    message.setContent(UserManager.getUser(message.getSender()) + "邀请您成为他的好友");
+                    message.setContent(user.getName() + "邀请您成为他的好友");
+                    systemMessageList.add(message);
+                }
+                break;
+            case 3:
+                user = UserManager.getUser(message.getSender());
+                if (user == null) {
+                    cacheList.add(message);
+                    Client.sendMessage("Get User " + message.getSender());
+                } else {
+                    message.setContent(user.getName() + "接受了您的好友申请");
+                    systemMessageList.add(message);
+                }
+                break;
+            case 4:
+                user = UserManager.getUser(message.getSender());
+                if (user == null) {
+                    cacheList.add(message);
+                    Client.sendMessage("Get User " + message.getSender());
+                } else {
+                    message.setContent(user.getName() + "拒绝了您的好友申请");
+                    systemMessageList.add(message);
+                }
+                break;
+            case 5:
+                user = UserManager.getUser(message.getSender());
+                if (user == null) {
+                    cacheList.add(message);
+                    Client.sendMessage("Get User " + message.getSender());
+                } else {
+                    message.setContent(user.getName()  + "不再是您的好友");
                     systemMessageList.add(message);
                 }
                 break;
@@ -93,10 +123,48 @@ public class MessageManager {
                 Group group = GroupManager.getGroup(message.getContent());
                 if (user == null || group == null) {
                     cacheList.add(message);
+                    Client.sendMessage("Get User " + message.getSender());
                     Client.sendMessage("Get Group " + message.getContent());
                 } else {
-                    String content = UserManager.getUser(message.getSender()) + "邀请您加入群聊" + GroupManager.getGroup(message.getContent());
+                    String content = user.getName() + "邀请您加入群聊" +group.getName();
                     message.setSender(message.getContent());
+                    message.setContent(content);
+                    systemMessageList.add(message);
+                }
+                break;
+            case 7:
+                user = UserManager.getUser(message.getSender());
+                group = GroupManager.getGroup(message.getReceiver());
+                if (user == null || group == null) {
+                    cacheList.add(message);
+                    Client.sendMessage("Get User " + message.getSender());
+                    Client.sendMessage("Get Group " + message.getContent());
+                } else {
+                    String content = user.getName() + "加入了群聊" + group.getName();
+                    message.setContent(content);
+                    systemMessageList.add(message);
+                }
+                break;
+            case 8:
+                user = UserManager.getUser(message.getSender());
+                if (user == null) {
+                    cacheList.add(message);
+                    Client.sendMessage("Get User " + message.getSender());
+                } else {
+                    String content = user.getName() + "拒绝了您的入群邀请";
+                    message.setContent(content);
+                    systemMessageList.add(message);
+                }
+                break;
+            case 9:
+                user = UserManager.getUser(message.getSender());
+                group = GroupManager.getGroup(message.getReceiver());
+                if (user == null || group == null) {
+                    cacheList.add(message);
+                    Client.sendMessage("Get User " + message.getSender());
+                    Client.sendMessage("Get Group " + message.getContent());
+                } else {
+                    String content = user.getName() + "退出了群聊" + group.getName();
                     message.setContent(content);
                     systemMessageList.add(message);
                 }

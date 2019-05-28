@@ -149,7 +149,7 @@ public class ChatPanel extends javax.swing.JPanel {
  * @param evt 
  */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        String content=jEditorPane1.getText();
+        String content=jEditorPane1.getText().replaceAll("\n", "");
         String sender=UserManager.getClient().getID();
         if (type==0){
             String receiver=user.getID();

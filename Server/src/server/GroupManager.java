@@ -114,7 +114,7 @@ class Group implements Comparable<Group>{
      * @param user 群成员ID
      */
     public void addMember(String user){
-        managerList.add(user);
+        memberList.add(user);
     }  
     /**
      * 删除群成员
