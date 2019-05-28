@@ -50,6 +50,7 @@ public class MessageManager {
     public static void forwardMessage(int type, String sender, String receiver,  String content){
         Message message=new Message(type,sender,receiver,content);
         for (String rev:message.getReceiverList()){
+            if (UserManager.getUser(rev)==null) continue;//如果用户不存在，丢弃该信息
             Socket socket=onlineMap.get(rev);
             if (socket==null){
                 //接收方不在线
@@ -138,7 +139,7 @@ public class MessageManager {
             case 9://退群
                 forwardMessage(type,sender,receiver,content);
                 AddressBookManager.getAddressBook(sender).deleteGroup(receiver);
-                GroupManager.getGroup(receiver).deleteMember(sender);
+                GroupManager.getGroup(receiver).deleteMember(sender);                
                 break;      
         }
     }

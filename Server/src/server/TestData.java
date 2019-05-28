@@ -37,6 +37,7 @@ public class TestData {
     };
     Group[] groups={
         new Group("10000","计算机学院","10000"),
+        new Group("10001","信息学院","10003"),
     };
 
     public TestData() {
@@ -59,5 +60,7 @@ public class TestData {
         AddressBookManager.getAddressBook("10004").addFriend("10000");
         MessageManager.forwardMessage(0,"10001","10000","Hello");
         MessageManager.forwardMessage(1,"10000","10000","Hello");
+        MessageManager.forwardMessage(2,"10002","10000","Hello");
+        MessageManager.forwardMessage(6,"10003","10000","10001");
     }
 }

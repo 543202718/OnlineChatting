@@ -39,6 +39,9 @@ public class GroupManager {
     }
     static void addGroup(Group group){
         int index=Integer.parseInt(group.getID())-STARTNUM;
+        if (GROUPS[index]!=null){
+            group.messageList=GROUPS[index].messageList;
+        }        
         GROUPS[index]=group;
     }
 
@@ -80,10 +83,10 @@ class Group extends Chatter implements Comparable<Group>{
         return master;
     }
     public String[] getMemberList(){
-        return (String[])memberList.toArray();
+        return memberList.toArray(new String[0]);
     }
     public String[] getManagerList(){
-        return (String[])managerList.toArray();
+        return managerList.toArray(new String[0]);
     }
     /**
      * 任命管理员

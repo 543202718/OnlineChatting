@@ -89,7 +89,7 @@ public class ListenerThread implements Runnable{
             for (String group : Client.addressBook.getGroupList()) {
                 Client.sendMessage("Get Group " + group);
             }
-            Client.sendMessage("Fetch " + UserManager.getClient().getID());
+            //Client.sendMessage("Fetch " + UserManager.getClient().getID());
             MainFrame.getInstance().updateAvatar();
             MainFrame.getInstance().updateAddressBook();
         } 

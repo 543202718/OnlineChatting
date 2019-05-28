@@ -41,7 +41,7 @@ public class UserManager {
     }
     static void addUser(User user){
         int index=Integer.parseInt(user.getID())-STARTNUM;
-        USERS[index]=user;
+        if (USERS[index]==null) USERS[index]=user;
     }
     static void setClientID(String ID){
         clientID=ID;

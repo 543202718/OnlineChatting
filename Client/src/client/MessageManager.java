@@ -37,54 +37,89 @@ import java.util.logging.Logger;
 public class MessageManager {
     static ArrayList<Chatter> messageList=new ArrayList<>();
     static ArrayList<Message> cacheList=new ArrayList<>();
-    static Timer timer=new Timer();
+    static ArrayList<Message> systemMessageList=new ArrayList<>();
        
     public static void addMessage(Message message) {
-        if (message.getType() == 0) {
-            //私聊信息
-            User user = UserManager.getUser(message.getSender());
-            if (user == null) {
-                cacheList.add(message);
-            } 
-            else {
-                user.addMessage(message);
-                messageList.remove(user);
-                messageList.add(user);
-            }
-        } 
-        else if (message.getType() == 1) {
-            //群聊信息
-            Group group = GroupManager.getGroup(message.getReceiver());
-            if (group == null) {
-                cacheList.add(message);
-            } 
-            else {
-                group.addMessage(message);
-                messageList.remove(group);
-                messageList.add(group);
-            }
+        switch (message.getType()) {
+            case 0:
+                //私聊信息
+                User user = UserManager.getUser(message.getSender());
+                if (user == null) {
+                    cacheList.add(message);
+                }
+                else {
+                    user.addMessage(message);
+                    if (!messageList.contains(user)){
+                        messageList.add(user);
+                    }                   
+                }   break;
+            case 1:
+                //群聊信息
+                Group group = GroupManager.getGroup(message.getReceiver());             
+                if (group == null) {
+                    cacheList.add(message);
+                }
+                else {
+                    System.out.println(group.getID());
+                    group.addMessage(message);
+                    if (!messageList.contains(group)){
+                        messageList.add(group);
+                    }                    
+                }   break;
+            default:
+                analyseMessage(message);
+                break;
         }
     }
     
     /**
      * 解析系统信息
-     * @param type
-     * @param sender
-     * @param receiver
-     * @param content 
+     * @param message
      */
-    public static void analyseMessage(int type,String sender,String receiver,String content){
-        
+    public static void analyseMessage(Message message){
+        switch (message.getType()) {
+            case 2:
+                User user = UserManager.getUser(message.getSender());
+                if (user == null) {
+                    cacheList.add(message);
+                    Client.sendMessage("Get User " + message.getSender());
+                } else {
+                    message.setContent(UserManager.getUser(message.getSender()) + "邀请您成为他的好友");
+                    systemMessageList.add(message);
+                }
+                break;
+            case 6:
+                user = UserManager.getUser(message.getSender());
+                Group group = GroupManager.getGroup(message.getContent());
+                if (user == null || group == null) {
+                    cacheList.add(message);
+                    Client.sendMessage("Get Group " + message.getContent());
+                } else {
+                    String content = UserManager.getUser(message.getSender()) + "邀请您加入群聊" + GroupManager.getGroup(message.getContent());
+                    message.setSender(message.getContent());
+                    message.setContent(content);
+                    systemMessageList.add(message);
+                }
+                break;
+            default:
+        }
     }
     
+    static void clearCache(){
+        while (!cacheList.isEmpty()){
+            Message msg=cacheList.get(0);
+            cacheList.remove(msg);
+            addMessage(msg);
+        }
+    }
 }
 
 
 class Message{
-    private final String sender;//发送方ID
-    private final String receiver;//接收方ID
-    private final int type;//0代表私聊信息，1代表群聊信息，大于等于2表示系统消息
-    private final String content;//内容
+    private String sender;//发送方ID
+    private String receiver;//接收方ID
+    private int type;//0代表私聊信息，1代表群聊信息，大于等于2表示系统消息
+    private String content;//内容
     private final Date date;//发送时间
             
 
@@ -96,6 +131,12 @@ class Message{
         this.date=date;
     }    
 
+    public void setSender(String sender) {
+        this.sender = sender;
+    }
+    public void setReceiver(String receiver) {
+        this.receiver = receiver;
+    }
     public String getSender() {
         return sender;
     }
@@ -108,16 +149,25 @@ class Message{
     public int getType() {
         return type;
     }
+    public void setType(int type){
+        this.type=type;
+    }
 
     public String getContent() {
         return content;
     }
+    public void setContent(String content){
+        this.content=content;
+    }
 
+    public String showString(){      
+        String s=String.format("%s %tT\n%s\n",UserManager.getUser(sender),date,content);
+        return s;
+    }
     
     @Override
     public String toString(){      
-        String s=String.format("%s %tT\n%s\n",UserManager.getUser(sender),date,content);
-        return s;
+        return getContent();
     }
     public static Message toMessage(String s){
         return null;

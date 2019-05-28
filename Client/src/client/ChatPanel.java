@@ -23,6 +23,8 @@
  */
 package client;
 
+import java.util.Date;
+
 /**
  *
  * @author Wang
@@ -54,14 +56,15 @@ public class ChatPanel extends javax.swing.JPanel {
     }
     
     public void updateMessage(){
+        jTextArea1.setText("");
         if (type==0){
             for (Message message:user.messageList){
-                jTextArea1.append(message+"\n\n");
+                jTextArea1.append(message.showString()+"\n\n");
             }
         }
         else if (type==1){
             for (Message message:group.messageList){
-                jTextArea1.append(message+"\n\n");
+                jTextArea1.append(message.showString()+"\n\n");
             }
         }
     }
@@ -87,9 +90,11 @@ public class ChatPanel extends javax.swing.JPanel {
 
         jTextArea1.setEditable(false);
         jTextArea1.setColumns(20);
+        jTextArea1.setFont(new java.awt.Font("微软雅黑", 0, 18)); // NOI18N
         jTextArea1.setRows(5);
         jScrollPane3.setViewportView(jTextArea1);
 
+        jEditorPane1.setFont(new java.awt.Font("微软雅黑", 0, 18)); // NOI18N
         jEditorPane1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 jEditorPane1KeyPressed(evt);
@@ -124,12 +129,12 @@ public class ChatPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton1)
-                .addContainerGap(33, Short.MAX_VALUE))
+                .addContainerGap(119, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 /**
@@ -140,11 +145,23 @@ public class ChatPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_jEditorPane1KeyPressed
 /**
- * 发送将输入框中的信息。
+ * 发送输入框中的信息。
  * @param evt 
  */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        String content=jEditorPane1.getText();
+        String sender=UserManager.getClient().getID();
+        if (type==0){
+            String receiver=user.getID();
+            Client.sendMessage("Message "+type+" "+sender+" "+receiver+" "+content);
+            user.messageList.add(new Message(0,sender,receiver,new Date(), content));
+            updateMessage();
+        }
+        else {
+            String receiver=group.getID();
+            Client.sendMessage("Message "+type+" "+sender+" "+receiver+" "+content);
+        }
+        jEditorPane1.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
 
 
