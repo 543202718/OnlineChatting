@@ -42,6 +42,7 @@ public class TCPAnalyzer {
             String s[]=message.split(" ");
             User user=UserManager.createUser(s[1],s[2],s[3]);
             th.user=user;
+            MessageManager.insertOnlineUser(s[1],th.clientSocket);//将该用户加入在线用户表           
             System.out.println(user.getID()+"注册成功");
             sendMessage(th,"NewUser "+user);
             //返回的报文满足格式： NewUser [user]
