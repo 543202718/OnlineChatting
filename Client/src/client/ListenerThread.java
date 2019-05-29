@@ -104,6 +104,9 @@ public class ListenerThread implements Runnable{
             String[] s = line.split(" ");
             Group group = Group.toGroup(s[1]);
             GroupManager.addGroup(group);
+            for (String ID: group.getMemberList()){
+                Client.sendMessage("Get User " + ID);
+            }
             MainFrame.getInstance().updateGroup();
         }
         else if (line.startsWith("Message")){          
