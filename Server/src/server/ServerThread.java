@@ -48,6 +48,7 @@ public class ServerThread implements Runnable{
             Scanner sc=new Scanner(clientSocket.getInputStream());
             while (!exit && sc.hasNext()){
                 String line=sc.nextLine();//读取一个输入
+                System.out.println(line);
                 TCPAnalyzer.analyse(line,this);//分析输入               
             }
             System.out.println("线程已经退出");

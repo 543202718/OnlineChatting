@@ -53,6 +53,7 @@ public class UserManager {
         int i=getValidID();
         String ID=Integer.toString(i+STARTNUM);
         USERS[i]=new User(ID,name,sex,password);
+        AddressBookManager.addAddressBook(ID,new AddressBook());
         System.out.println("用户"+ID+"创建完成");
         return USERS[i];
     }

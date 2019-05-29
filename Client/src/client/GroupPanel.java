@@ -32,13 +32,14 @@ import javax.swing.JOptionPane;
  */
 public class GroupPanel extends javax.swing.JPanel {
     Group group;
-    DefaultListModel<String> model=new DefaultListModel<>();
+    DefaultListModel<String> model;
     /**
      * Creates new form GroupPanel
      */
     public GroupPanel(Group group) {
         initComponents();
         this.group=group;
+        model=new DefaultListModel<>();
         jLabel1.setText("群号："+group.getID());
         jLabel2.setText("群名称："+group.getName());
         jLabel3.setText("群主："+ UserManager.getUser(group.getMaster()).getName());       
