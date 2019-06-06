@@ -394,7 +394,9 @@ public class MainFrame extends javax.swing.JFrame {
             String ID = JOptionPane.showInputDialog(this, "请输入对方账号以添加好友：", "添加好友", JOptionPane.QUESTION_MESSAGE);
             try {
                 int x = Integer.parseInt(ID);
-                Client.sendMessage("Message 2 " + UserManager.getClient().getID() + " " + ID + " Invite");
+                if (!ID.equals(UserManager.getClient().getID())){
+                    Client.sendMessage("Message 2 " + UserManager.getClient().getID() + " " + ID + " Invite");
+                }
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(null, "您输入的账号不存在", "错误", JOptionPane.ERROR_MESSAGE);
             }

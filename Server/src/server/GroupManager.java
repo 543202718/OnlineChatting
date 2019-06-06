@@ -121,7 +121,7 @@ class Group implements Comparable<Group>{
      * @param user 群成员ID
      */
     public void deleteMember(String user){
-        managerList.remove((String)user);
+        memberList.remove((String)user);
     }
     @Override
     public int compareTo(Group t) {

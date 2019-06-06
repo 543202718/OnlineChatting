@@ -163,9 +163,17 @@ public class GroupPanel extends javax.swing.JPanel {
         String ID=jTextField1.getText();
         try {
             int x=Integer.parseInt(ID);
-            Client.sendMessage("Message 6 "+UserManager.getClient().getID()+" "+ID+" "+group.getID());
-            System.out.println("Message 6 "+UserManager.getClient().getID()+" "+ID+" "+group.getID());
-            JOptionPane.showMessageDialog(null,"入群邀请已发送", "邀请成员", JOptionPane.INFORMATION_MESSAGE);
+            boolean flag=true;
+            for (String s: group.getMemberList()){
+                if (s.equals(ID)) flag=false;
+            }
+            if (flag){
+                Client.sendMessage("Message 6 "+UserManager.getClient().getID()+" "+ID+" "+group.getID());
+                JOptionPane.showMessageDialog(null,"入群邀请已发送", "邀请成员", JOptionPane.INFORMATION_MESSAGE);
+            }
+            else {
+                JOptionPane.showMessageDialog(null,"您邀请的用户已在群聊中", "邀请成员", JOptionPane.ERROR_MESSAGE);
+            }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null,"您输入的账号不存在", "错误", JOptionPane.ERROR_MESSAGE);
         }        

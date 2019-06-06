@@ -138,7 +138,7 @@ public class MessageManager {
                 if (user == null || group == null) {
                     cacheList.add(message);
                     Client.sendMessage("Get User " + message.getSender());
-                    Client.sendMessage("Get Group " + message.getContent());
+                    Client.sendMessage("Get Group " + message.getReceiver());
                 } else {
                     String content = user.getName() + "加入了群聊" + group.getName();
                     message.setContent(content);
