@@ -33,15 +33,28 @@ public class UserManager {
     private static final int MAXUSERS=100;
     private static final int STARTNUM=10000;
     private static final User[] USERS=new User[MAXUSERS];
+    /**
+     * 得到指定的用户
+     * @param ID 用户ID
+     * @return 用户
+     */
     static User getUser(String ID){
         int index=Integer.parseInt(ID)-STARTNUM;
         if (index<0 || index>MAXUSERS)  return null;
         else return USERS[index];
     }
+    /**
+     * 向列表中新增一个用户
+     * @param user 用户
+     */
     static void addUser(User user){
         int index=Integer.parseInt(user.getID())-STARTNUM;
         USERS[index]=user;
     }
+    /**
+     * 得到有效的未使用的用户ID
+     * @return 未使用的用户ID
+     */
     private static int getValidID(){
         int i;
         for (i=0;i<MAXUSERS;i++){
@@ -49,6 +62,13 @@ public class UserManager {
         }
         return i;
     }
+    /**
+     * 创建一个用户，并将其加入列表
+     * @param name 昵称
+     * @param sex 性别
+     * @param password 密码
+     * @return 创建的用户
+     */
     static User createUser(String name,String sex,String password){
         int i=getValidID();
         String ID=Integer.toString(i+STARTNUM);
@@ -123,12 +143,5 @@ class User{
         }
         return null;
     }
-    /*
-    static User toUser(String s){  
-        String ss=s.substring(1,s.length()-1);
-        String[] sub=ss.split(",");
-        return new User(sub[0],sub[1],sub[2]);        
-    }
-    */
     
 }

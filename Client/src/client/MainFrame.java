@@ -48,7 +48,9 @@ public class MainFrame extends javax.swing.JFrame {
         initComponents();
         setup();
     }
-    
+    /**
+     * 初始设置
+     */
     private void setup(){
         int iconSize=100;
         jButton7.setVisible(false);
@@ -93,7 +95,6 @@ public class MainFrame extends javax.swing.JFrame {
     public void updateMessage(){
         if (channel!=0) return;
         model.removeAllElements();
-        int n=MessageManager.messageList.size();
         for (String s: Client.addressBook.getFriendList()){
             User user=UserManager.getUser(s);
             if (user!=null){
@@ -134,7 +135,9 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
     
-    
+    /**
+     * 更新聊天窗体
+     */
     public void updateChatPanel(){
         if (chatPanel!=null){
             chatPanel.updateMessage();

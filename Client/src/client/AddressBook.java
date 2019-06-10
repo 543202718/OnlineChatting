@@ -65,7 +65,11 @@ public class AddressBook{
         }      
         return sb.toString();
     }
-    
+    /**
+     * toString()的逆向方法，从字符串中解析得到通讯录
+     * @param s 表示通讯录的字符串
+     * @return 解析得到的通讯录
+     */
     public static AddressBook toAddressBook(String s){
         String[] sub=s.split(",");
         AddressBook ans=new AddressBook();

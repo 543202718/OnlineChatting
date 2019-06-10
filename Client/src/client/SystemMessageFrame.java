@@ -46,7 +46,9 @@ public class SystemMessageFrame extends javax.swing.JFrame {
         }
         return instance;
     }
-    
+    /**
+     * 更新系统消息列表
+     */
     public void update(){
         model.removeAllElements();
         int n=MessageManager.systemMessageList.size();
@@ -141,7 +143,10 @@ public class SystemMessageFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+/**
+ * JList的点击事件，根据消息类型控制接受和拒绝按钮的可用性
+ * @param evt 
+ */
     private void jList1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList1MouseClicked
         int i=jList1.getSelectedIndex();
         if (i<0) return;

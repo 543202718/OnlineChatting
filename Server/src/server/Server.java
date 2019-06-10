@@ -36,7 +36,7 @@ import java.util.logging.Logger;
  * @author Wang
  */
 public class Server {
-    private static final int SERVERPORT=10000;
+    private static final int SERVERPORT=10000;//服务器绑定的周知端口号
     
 
     /**

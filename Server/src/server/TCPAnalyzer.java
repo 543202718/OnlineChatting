@@ -36,6 +36,11 @@ import java.util.logging.Logger;
  * @author Wang
  */
 public class TCPAnalyzer {
+    /**
+     * 解析TCP报文
+     * @param message 报文内容
+     * @param th 接收到该报文的线程
+     */
     public static void analyse(String message,ServerThread th){
         if (message.startsWith("Register")){
             //注册的报文应当满足格式： Register [name] [sex] [password]
@@ -124,7 +129,11 @@ public class TCPAnalyzer {
             }           
         }        
     }
-   
+   /**
+    * 发送响应报文
+    * @param th 接收到原报文的线程
+    * @param message 响应报文
+    */
     private static void sendMessage(ServerThread th,String message){
         PrintWriter writer;
         try {

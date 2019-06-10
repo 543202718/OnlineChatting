@@ -24,7 +24,6 @@
 package client;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -56,7 +55,10 @@ public class ListenerThread implements Runnable{
             Logger.getLogger(TestListenerThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+    /**
+     * 解析服务器发送的报文
+     * @param line 服务器发送的报文
+     */
     public void analyse(String line){
         if (line.startsWith("LoginFailed")){
             JOptionPane.showMessageDialog(null,"您输入的账号或密码错误", "登录失败", JOptionPane.ERROR_MESSAGE);

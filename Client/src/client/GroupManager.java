@@ -33,10 +33,19 @@ public class GroupManager {
     private static final int MAXGROUP=100;
     private static final int STARTNUM=10000;
     private static final Group[] GROUPS=new Group[MAXGROUP];
+    /**
+     * 得到指定的群聊
+     * @param ID 群ID
+     * @return 群聊
+     */
     static Group getGroup(String ID){
         int index=Integer.parseInt(ID)-STARTNUM;
         return GROUPS[index];
     }
+    /**
+     * 向列表中加入群聊
+     * @param group 新增的群聊
+     */
     static void addGroup(Group group){
         int index=Integer.parseInt(group.getID())-STARTNUM;
         if (GROUPS[index]!=null){
@@ -50,10 +59,6 @@ public class GroupManager {
 abstract class Chatter{
     
 }
-
-
-
-
 class Group extends Chatter implements Comparable<Group>{
     private final String ID;//群ID，唯一
     private String name;//群名称，不唯一
@@ -89,24 +94,6 @@ class Group extends Chatter implements Comparable<Group>{
         return managerList.toArray(new String[0]);
     }
     /**
-     * 任命管理员
-     * @param user 管理员ID
-     */
-    public void appointManager(String user){
-        if (memberList.contains(user)){
-            managerList.add(user);
-        }
-    }
-    /**
-     * 解除管理员职务
-     * @param user 管理员ID
-     */
-    public void dismissManager(String user){
-        if (memberList.contains(user)){
-            managerList.remove(user);
-        }
-    }
-    /**
      * 增加群成员
      * @param user 群成员ID
      */
@@ -129,7 +116,11 @@ class Group extends Chatter implements Comparable<Group>{
     public String toString(){
         return name;
     }
-    
+    /**
+     * 服务器端toString()方法的逆向方法，从字符串中解析得到一个群聊
+     * @param s 表示一个群聊的字符串
+     * @return 解析得到的群聊
+     */   
     public static Group toGroup(String s){
         String sub[]=s.split(",");
         Group group=new Group(sub[0],sub[1],sub[2]);
@@ -143,6 +134,10 @@ class Group extends Chatter implements Comparable<Group>{
         }
         return group;
     }
+    /**
+     * 向该群聊的消息列表中增加一个消息
+     * @param message 
+     */
     public void addMessage(Message message){
         messageList.add(message);
     }

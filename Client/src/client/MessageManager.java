@@ -25,9 +25,6 @@ package client;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Timer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -35,10 +32,13 @@ import java.util.logging.Logger;
  * @author Wang
  */
 public class MessageManager {
-    static ArrayList<Chatter> messageList=new ArrayList<>();
-    static ArrayList<Message> cacheList=new ArrayList<>();
-    static ArrayList<Message> systemMessageList=new ArrayList<>();
-       
+    static ArrayList<Message> cacheList=new ArrayList<>();//消息缓存列表
+    static ArrayList<Message> systemMessageList=new ArrayList<>();//系统消息列表
+    /**
+     * 增加一条消息。如果发送方尚未从服务器下载，它将被加入缓存列表；
+     * 否则，加入发送方的消息列表。
+     * @param message 消息
+     */
     public static void addMessage(Message message) {
         switch (message.getType()) {
             case 0:
@@ -48,11 +48,9 @@ public class MessageManager {
                     cacheList.add(message);
                 }
                 else {
-                    user.addMessage(message);
-                    if (!messageList.contains(user)){
-                        messageList.add(user);
-                    }                   
-                }   break;
+                    user.addMessage(message);                  
+                }   
+                break;
             case 1:
                 //群聊信息
                 Group group = GroupManager.getGroup(message.getReceiver());             
@@ -61,11 +59,9 @@ public class MessageManager {
                 }
                 else {
                     System.out.println(group.getID());
-                    group.addMessage(message);
-                    if (!messageList.contains(group)){
-                        messageList.add(group);
-                    }                    
-                }   break;
+                    group.addMessage(message);                 
+                }   
+                break;
             default:
                 analyseMessage(message);
                 break;
@@ -172,7 +168,9 @@ public class MessageManager {
             default:
         }
     }
-    
+    /**
+     * 清空缓存列表
+     */
     static void clearCache(){
         while (!cacheList.isEmpty()){
             Message msg=cacheList.get(0);
@@ -208,12 +206,9 @@ class Message{
     public String getSender() {
         return sender;
     }
-
-
     public String getReceiver() {
         return receiver;
     }
-    
     public int getType() {
         return type;
     }
@@ -237,34 +232,6 @@ class Message{
     public String toString(){      
         return getContent();
     }
-    public static Message toMessage(String s){
-        return null;
-    }
-    
 }
 
 
-class MessageCacheThread implements Runnable{
-
-    public MessageCacheThread() {
-    }
-
-    
-    @Override
-    public void run() {
-        while (true) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(MessageCacheThread.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            if (!MessageManager.cacheList.isEmpty()) {
-                for (Message msg : MessageManager.cacheList) {
-                    MessageManager.addMessage(msg);
-                }
-            }
-            MainFrame.getInstance().updateMessage();
-        }
-    }
-    
-}

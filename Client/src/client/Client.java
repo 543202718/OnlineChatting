@@ -37,8 +37,8 @@ import java.util.logging.Logger;
  * @author Wang
  */
 public class Client {
-    private static final int SERVERPORT=10000;
-    static Socket socket;
+    private static final int SERVERPORT=10000;//服务器的周知端口号
+    public static Socket socket;//与服务器连接的socket
     public static AddressBook addressBook;
     /**
      * @param args the command line arguments
@@ -49,16 +49,16 @@ public class Client {
             ExecutorService threadPool = Executors.newCachedThreadPool();//使用线程池管理线程
             Thread thread=new Thread(new ListenerThread());
             threadPool.execute(thread);
-            //thread=new Thread(new MessageCacheThread());
-            //threadPool.execute(thread);
-            LoginFrame.getInstance().setVisible(true);
-            //TestFrame.getInstance().setVisible(true);           
+            LoginFrame.getInstance().setVisible(true);        
             
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+    /**
+     * 向服务器发送报文
+     * @param message  报文
+     */
     public static void sendMessage(String message){
         PrintWriter writer;
         try {

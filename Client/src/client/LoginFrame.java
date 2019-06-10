@@ -140,10 +140,11 @@ public class LoginFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-/**
- * 注册
- * @param evt 
- */
+    /**
+     * 注册
+     *
+     * @param evt
+     */
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         RegisterFrame.getInstance().setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -151,7 +152,8 @@ public class LoginFrame extends javax.swing.JFrame {
     
     /**
      * 登录
-     * @param evt 
+     *
+     * @param evt
      */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         String ID=jTextField1.getText();

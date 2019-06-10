@@ -54,7 +54,9 @@ public class ChatPanel extends javax.swing.JPanel {
         }
         updateMessage();
     }
-    
+    /**
+     * 更新当前显示的聊天信息
+     */
     public void updateMessage(){
         jTextArea1.setText("");
         if (type==0){

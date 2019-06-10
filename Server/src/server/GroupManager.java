@@ -32,14 +32,27 @@ public class GroupManager {
     private static final int MAXGROUP=100;
     private static final int STARTNUM=10000;
     private static final Group[] GROUPS=new Group[MAXGROUP];
+    /**
+     * 得到指定的群聊
+     * @param ID 群ID
+     * @return 群聊
+     */
     static Group getGroup(String ID){
         int index=Integer.parseInt(ID)-STARTNUM;
         return GROUPS[index];
     }
+    /**
+     * 向列表中加入群聊
+     * @param group 新增的群聊
+     */
     static void addGroup(Group group){
         int index=Integer.parseInt(group.getID())-STARTNUM;
         GROUPS[index]=group;
     }
+    /**
+     * 得到一个有效的未使用的ID
+     * @return 未使用的ID
+     */
     private static int getValidID(){
         int i;
         for (i=0;i<MAXGROUP;i++){
@@ -47,6 +60,12 @@ public class GroupManager {
         }
         return i;
     }
+    /**
+     * 创建一个新的群聊，将它加入列表，并在群主的通讯录中加入该群聊
+     * @param name 群名称
+     * @param master 群主ID
+     * @return 新建的群聊
+     */
     static Group createGroup(String name,String master){
         int i=getValidID();
         String ID=Integer.toString(i+STARTNUM);//得到有效ID
@@ -92,24 +111,6 @@ class Group implements Comparable<Group>{
         return managerList.toArray(new String[0]);
     }
     /**
-     * 任命管理员
-     * @param user 管理员ID
-     */
-    public void appointManager(String user){
-        if (memberList.contains(user)){
-            managerList.add(user);
-        }
-    }
-    /**
-     * 解除管理员职务
-     * @param user 管理员ID
-     */
-    public void dismissManager(String user){
-        if (memberList.contains(user)){
-            managerList.remove(user);
-        }
-    }
-    /**
      * 增加群成员
      * @param user 群成员ID
      */
@@ -143,7 +144,11 @@ class Group implements Comparable<Group>{
         }     
         return sb.toString();
     }
-    
+    /**
+     * toString()方法的逆向方法，从字符串中解析得到一个群聊
+     * @param s 表示一个群聊的字符串
+     * @return 解析得到的群聊
+     */
     public static Group toGroup(String s){
         String sub[]=s.split(",");
         Group group=new Group(sub[0],sub[1],sub[2]);
@@ -157,6 +162,4 @@ class Group implements Comparable<Group>{
         }
         return group;
     }
-    
-    
 }
